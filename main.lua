@@ -1,86 +1,73 @@
---// KaLi Hub - Rayfield UI (FIXED & EXECUTING)
+--// KaLi Hub (FIXED - SAME PROJECT)
 
--- Load Rayfield Library (CORRECT URL)
-local Rayfield
-local success, err = pcall(function()
-    Rayfield = loadstring(game:HttpGet(
-        "https://raw.githubusercontent.com/shlexware/Rayfield/main/source.lua"
-    ))()
-end)
+local Library = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/Rain-Design/Libraries/main/Shaman/Library.lua"
+))()
 
-if not success or not Rayfield then
-    warn("Rayfield failed to load:", err)
-    return
-end
-
--- Create Window
-local Window = Rayfield:CreateWindow({
-    Name = "KaLi Hub",
-    LoadingTitle = "KaLi Hub",
-    LoadingSubtitle = "Rayfield UI",
-    ConfigurationSaving = {
-        Enabled = true,
-        FolderName = "KaLiHub",
-        FileName = "Config"
-    },
-    KeySystem = false
+--// Window
+local Window = Library:Window({
+    Text = "KaLi Hub"
 })
 
--- Tabs
-local MainTab = Window:CreateTab("Main", 4483362458)
-local SettingsTab = Window:CreateTab("Settings", 4483362458)
+--// Tabs
+local MainTab = Window:Tab({ Text = "Main" })
+local SettingsTab = Window:Tab({ Text = "Settings" })
 
--- ===== MAIN TAB =====
-MainTab:CreateButton({
-    Name = "Do Action",
+--// MAIN TAB
+MainTab:Button({
+    Text = "Do Action",
     Callback = function()
-        print("Action executed")
+        print("Main action executed!")
     end
 })
 
-MainTab:CreateToggle({
-    Name = "Enable Feature",
-    CurrentValue = false,
-    Callback = function(Value)
-        print("Feature:", Value)
+MainTab:Toggle({
+    Text = "Enable Feature",
+    Default = false,
+    Callback = function(state)
+        print("Feature enabled:", state)
     end
 })
 
-MainTab:CreateSlider({
-    Name = "Power Level",
-    Range = {0, 100},
-    Increment = 1,
-    CurrentValue = 50,
-    Callback = function(Value)
-        print("Power:", Value)
+MainTab:Slider({
+    Text = "Power Level",
+    Min = 0,
+    Max = 100,
+    Default = 50,
+    Callback = function(value)
+        print("Power Level:", value)
     end
 })
 
--- ===== SETTINGS TAB =====
-SettingsTab:CreateDropdown({
-    Name = "Mode",
-    Options = {"Easy", "Medium", "Hard"},
-    CurrentOption = "Easy",
-    Callback = function(Value)
-        print("Mode:", Value)
+--// SETTINGS TAB
+SettingsTab:Toggle({
+    Text = "Show Notifications",
+    Default = true,
+    Callback = function(state)
+        print("Notifications enabled:", state)
     end
 })
 
-SettingsTab:CreateInput({
-    Name = "Player Name",
-    PlaceholderText = "Enter name",
-    RemoveTextAfterFocusLost = false,
-    Callback = function(Text)
-        print("Name:", Text)
+SettingsTab:Dropdown({
+    Text = "Mode",
+    List = {"Easy", "Medium", "Hard"},
+    Default = "Easy",
+    Callback = function(choice)
+        print("Mode selected:", choice)
     end
 })
 
-SettingsTab:CreateLabel("KaLi Hub © 2026")
-
--- Notification
-Rayfield:Notify({
-    Title = "KaLi Hub",
-    Content = "GUI Loaded Successfully",
-    Duration = 4,
-    Image = 4483362458
+SettingsTab:Input({
+    Text = "Set Name",
+    Placeholder = "Enter name here",
+    Callback = function(text)
+        print("Name set to:", text)
+    end
 })
+
+SettingsTab:Label({
+    Text = "Created by KaLi Hub"
+})
+
+--// REQUIRED (THIS IS WHAT YOU WERE MISSING)
+Library:Init()
