@@ -1,143 +1,85 @@
---// KaLi Hub - Shaman GUI (Fade-In + Theme, STABLE)
+--// KaLi Hub - Rayfield UI (STABLE)
 
--- Load library safely
-local Library
-local success, lib = pcall(function()
-    return loadstring(game:HttpGet(
-        "https://raw.githubusercontent.com/Rain-Design/Libraries/main/Shaman/Library.lua"
-    ))()
-end)
+-- Load Rayfield Library
+local Rayfield = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/shlexware/Rayfield/main/source"
+))()
 
-if not success or not lib then
-    warn("Failed to load Shaman Library")
-    return
-end
-
-Library = lib
-local Flags = Library.Flags
-local TweenService = game:GetService("TweenService")
-
--- =====================
--- THEME (B)
--- =====================
-Library:Theme({
-    Background = Color3.fromRGB(20, 20, 25),
-    Secondary = Color3.fromRGB(30, 30, 38),
-    Accent = Color3.fromRGB(80, 160, 255),
-    Outline = Color3.fromRGB(40, 40, 50),
-    Text = Color3.fromRGB(235, 235, 235)
+-- Create Window
+local Window = Rayfield:CreateWindow({
+    Name = "KaLi Hub",
+    LoadingTitle = "KaLi Hub",
+    LoadingSubtitle = "by YourName",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = "KaLiHub",
+        FileName = "Config"
+    },
+    Discord = {
+        Enabled = false
+    },
+    KeySystem = false
 })
 
--- =====================
--- WINDOW
--- =====================
-local Window = Library:Window({
-    Text = "KaLi Hub"
-})
+-- Tabs
+local MainTab = Window:CreateTab("Main", 4483362458)
+local SettingsTab = Window:CreateTab("Settings", 4483362458)
 
--- =====================
--- TABS
--- =====================
-local MainTab = Window:Tab({ Text = "Main" })
-local SettingsTab = Window:Tab({ Text = "Settings" })
-
--- =====================
--- SECTIONS
--- =====================
-local MainSection = MainTab:Section({ Text = "Features" })
-local SettingsSection = SettingsTab:Section({ Text = "Options" })
-
--- =====================
--- MAIN FEATURES
--- =====================
-MainSection:Button({
-    Text = "Do Action",
+-- ======================
+-- MAIN TAB
+-- ======================
+MainTab:CreateButton({
+    Name = "Do Action",
     Callback = function()
         print("Action executed")
     end
 })
 
-MainSection:Toggle({
-    Text = "Enable Feature",
-    Default = false,
-    Callback = function(v)
-        print("Feature:", v)
+MainTab:CreateToggle({
+    Name = "Enable Feature",
+    CurrentValue = false,
+    Callback = function(Value)
+        print("Feature:", Value)
     end
 })
 
-MainSection:Slider({
-    Text = "Power Level",
-    Minimum = 0,
-    Maximum = 100,
-    Default = 50,
-    Flag = "Power",
-    Callback = function(v)
-        print("Power:", v)
+MainTab:CreateSlider({
+    Name = "Power Level",
+    Range = {0, 100},
+    Increment = 1,
+    CurrentValue = 50,
+    Callback = function(Value)
+        print("Power:", Value)
     end
 })
 
--- =====================
--- SETTINGS
--- =====================
-SettingsSection:Dropdown({
-    Text = "Mode",
-    List = {"Easy", "Medium", "Hard"},
-    Flag = "Mode",
-    Callback = function(v)
-        print("Mode:", v)
+-- ======================
+-- SETTINGS TAB
+-- ======================
+SettingsTab:CreateDropdown({
+    Name = "Mode",
+    Options = {"Easy", "Medium", "Hard"},
+    CurrentOption = "Easy",
+    Callback = function(Value)
+        print("Mode:", Value)
     end
 })
 
-SettingsSection:Input({
-    Text = "Player Name",
-    Placeholder = "Enter name",
-    Flag = "Name",
-    Callback = function(v)
-        print("Name:", v)
+SettingsTab:CreateInput({
+    Name = "Player Name",
+    PlaceholderText = "Enter name",
+    RemoveTextAfterFocusLost = false,
+    Callback = function(Text)
+        print("Name:", Text)
     end
 })
 
-SettingsSection:Label({
-    Text = "KaLi Hub © 2026",
-    Color = Color3.fromRGB(120, 180, 255)
-})
+SettingsTab:CreateLabel("KaLi Hub © 2026")
 
--- =====================
--- FADE-IN ANIMATION (A)
--- =====================
-task.wait() -- let UI fully render first
-
-local gui = Library.UI
-if gui then
-    gui.Enabled = true
-
-    for _, obj in ipairs(gui:GetDescendants()) do
-        if obj:IsA("Frame") then
-            obj.BackgroundTransparency = 1
-            TweenService:Create(
-                obj,
-                TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-                {BackgroundTransparency = 0}
-            ):Play()
-        elseif obj:IsA("TextLabel") or obj:IsA("TextButton") then
-            obj.TextTransparency = 1
-            TweenService:Create(
-                obj,
-                TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-                {TextTransparency = 0}
-            ):Play()
-        end
-    end
-end
-
--- =====================
--- NOTIFY
--- =====================
-Library:Notify({
+-- Notification
+Rayfield:Notify({
     Title = "KaLi Hub",
-    Text = "Loaded Successfully",
-    Duration = 4
+    Content = "GUI Loaded Successfully",
+    Duration = 4,
+    Image = 4483362458
 })
-
--- Select default tab LAST
-MainTab:Select()
