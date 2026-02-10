@@ -1,18 +1,29 @@
--- Simple Executor-Safe GUI
+-- KaLiHub Executor-Safe GUI
 
-local player = game.Players.LocalPlayer
-local mouse = player:GetMouse()
+-- Services
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+
+-- Get local player safely
+local player = Players.LocalPlayer
+if not player then
+    Players.PlayerAdded:Wait()
+    player = Players.LocalPlayer
+end
+
+-- Ensure PlayerGui exists
+local playerGui = player:WaitForChild("PlayerGui")
 
 -- Remove old GUI if exists
-if player.PlayerGui:FindFirstChild("KaLiHub") then
-    player.PlayerGui.KaLiHub:Destroy()
+if playerGui:FindFirstChild("KaLiHub") then
+    playerGui.KaLiHub:Destroy()
 end
 
 -- ScreenGui
 local gui = Instance.new("ScreenGui")
 gui.Name = "KaLiHub"
 gui.ResetOnSpawn = false
-gui.Parent = player.PlayerGui
+gui.Parent = playerGui
 
 -- Main Window
 local main = Instance.new("Frame")
@@ -78,21 +89,16 @@ float.MouseButton1Click:Connect(function()
     float.Visible = false
 end)
 
--- Dragging function
+-- Draggable function
 local function makeDraggable(frame)
     local dragging = false
-    local dragInput, mousePos, framePos
-
-    local function update(input)
-        local delta = input.Position - mousePos
-        frame.Position = UDim2.new(0, framePos.X + delta.X, 0, framePos.Y + delta.Y)
-    end
+    local dragInput, startPos, startMousePos
 
     frame.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
-            mousePos = input.Position
-            framePos = frame.Position
+            startMousePos = input.Position
+            startPos = frame.Position
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
                     dragging = false
@@ -107,13 +113,14 @@ local function makeDraggable(frame)
         end
     end)
 
-    game:GetService("UserInputService").InputChanged:Connect(function(input)
+    UserInputService.InputChanged:Connect(function(input)
         if input == dragInput and dragging then
-            update(input)
+            local delta = input.Position - startMousePos
+            frame.Position = UDim2.new(0, startPos.X.Offset + delta.X, 0, startPos.Y.Offset + delta.Y)
         end
     end)
 end
 
--- Make main window and floating button draggable
+-- Apply draggable to main (title bar) and floating button
 makeDraggable(title)
 makeDraggable(float)
