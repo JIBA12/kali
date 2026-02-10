@@ -1,7 +1,9 @@
+-- ====== Setup ======
 local player = game.Players.LocalPlayer
+local mouse = player:GetMouse()
 local playerGui = player:WaitForChild("PlayerGui")
 
--- Remove old GUI
+-- Remove old GUI if exists
 if playerGui:FindFirstChild("KaLiHub") then
     playerGui.KaLiHub:Destroy()
 end
@@ -11,125 +13,121 @@ local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "KaLiHub"
 ScreenGui.Parent = playerGui
 
--- Main Window
+-- ====== Main Window ======
 local Window = Instance.new("Frame")
 Window.Size = UDim2.new(0, 500, 0, 400)
 Window.Position = UDim2.new(0.5, -250, 0.5, -200)
-Window.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+Window.BackgroundColor3 = Color3.fromRGB(30,30,35)
 Window.BorderSizePixel = 0
 Window.Parent = ScreenGui
-
--- Simple Dragging
-local dragging = false
-local offset
-Window.MouseButton1Down:Connect(function(x, y)
-    dragging = true
-    offset = Vector2.new(x, y) - Vector2.new(Window.Position.X.Offset, Window.Position.Y.Offset)
-end)
-game:GetService("UserInputService").InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = false
-    end
-end)
-Window.MouseMoved:Connect(function(x, y)
-    if dragging then
-        Window.Position = UDim2.new(0, x - offset.X, 0, y - offset.Y)
-    end
-end)
 
 -- Title Bar
 local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, -30, 0, 30)
 Title.Position = UDim2.new(0, 0, 0, 0)
-Title.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+Title.BackgroundColor3 = Color3.fromRGB(20,20,25)
 Title.Text = "KaLi Hub"
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextColor3 = Color3.fromRGB(255,255,255)
 Title.Font = Enum.Font.SourceSansBold
 Title.TextSize = 20
 Title.Parent = Window
 
--- Minimize Button
+-- ====== Minimize Button ======
 local MinimizeBtn = Instance.new("TextButton")
 MinimizeBtn.Size = UDim2.new(0, 30, 0, 30)
 MinimizeBtn.Position = UDim2.new(1, -30, 0, 0)
-MinimizeBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+MinimizeBtn.BackgroundColor3 = Color3.fromRGB(200,50,50)
 MinimizeBtn.Text = "_"
-MinimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+MinimizeBtn.TextColor3 = Color3.fromRGB(255,255,255)
 MinimizeBtn.Font = Enum.Font.SourceSansBold
 MinimizeBtn.TextSize = 20
 MinimizeBtn.Parent = Window
 
--- Floating Icon
+-- ====== Floating Icon ======
 local FloatingIcon = Instance.new("TextButton")
-FloatingIcon.Size = UDim2.new(0, 50, 0, 50)
-FloatingIcon.Position = UDim2.new(0.1, 0, 0.1, 0)
-FloatingIcon.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+FloatingIcon.Size = UDim2.new(0,50,0,50)
+FloatingIcon.Position = UDim2.new(0.1,0,0.1,0)
+FloatingIcon.BackgroundColor3 = Color3.fromRGB(50,50,60)
 FloatingIcon.Text = "KaLi"
-FloatingIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
+FloatingIcon.TextColor3 = Color3.fromRGB(255,255,255)
 FloatingIcon.Font = Enum.Font.SourceSansBold
 FloatingIcon.TextSize = 18
 FloatingIcon.Visible = false
 FloatingIcon.Parent = ScreenGui
 
--- Floating Icon Dragging
-local draggingIcon = false
-local offsetIcon
-FloatingIcon.MouseButton1Down:Connect(function(x, y)
-    draggingIcon = true
-    offsetIcon = Vector2.new(x, y) - Vector2.new(FloatingIcon.Position.X.Offset, FloatingIcon.Position.Y.Offset)
-end)
-FloatingIcon.MouseMoved:Connect(function(x, y)
-    if draggingIcon then
-        FloatingIcon.Position = UDim2.new(0, x - offsetIcon.X, 0, y - offsetIcon.Y)
-    end
-end)
-FloatingIcon.MouseButton1Up:Connect(function()
-    draggingIcon = false
-end)
+-- ====== Dragging Function ======
+local function makeDraggable(frame)
+    local dragging = false
+    local dragInput
+    local dragStart
+    local startPos
 
--- Minimize / Restore
+    frame.MouseButton1Down:Connect(function()
+        dragging = true
+        dragStart = Vector2.new(mouse.X, mouse.Y)
+        startPos = Vector2.new(frame.Position.X.Offset, frame.Position.Y.Offset)
+    end)
+
+    mouse.Move:Connect(function()
+        if dragging then
+            local delta = Vector2.new(mouse.X, mouse.Y) - dragStart
+            frame.Position = UDim2.new(0, startPos.X + delta.X, 0, startPos.Y + delta.Y)
+        end
+    end)
+
+    mouse.Button1Up:Connect(function()
+        dragging = false
+    end)
+end
+
+-- Apply dragging to window and floating icon
+makeDraggable(Window)
+makeDraggable(FloatingIcon)
+
+-- ====== Minimize / Restore ======
 MinimizeBtn.MouseButton1Click:Connect(function()
     Window.Visible = false
     FloatingIcon.Visible = true
 end)
+
 FloatingIcon.MouseButton1Click:Connect(function()
     FloatingIcon.Visible = false
     Window.Visible = true
 end)
 
--- Simple Tab Example
+-- ====== Tabs & Content ======
 local TabsFrame = Instance.new("Frame")
-TabsFrame.Size = UDim2.new(0, 120, 1, -30)
-TabsFrame.Position = UDim2.new(0, 0, 0, 30)
-TabsFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+TabsFrame.Size = UDim2.new(0,120,1,-30)
+TabsFrame.Position = UDim2.new(0,0,0,30)
+TabsFrame.BackgroundColor3 = Color3.fromRGB(40,40,50)
 TabsFrame.Parent = Window
 
 local ContentFrame = Instance.new("Frame")
-ContentFrame.Size = UDim2.new(1, -120, 1, -30)
-ContentFrame.Position = UDim2.new(0, 120, 0, 30)
-ContentFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+ContentFrame.Size = UDim2.new(1,-120,1,-30)
+ContentFrame.Position = UDim2.new(0,120,0,30)
+ContentFrame.BackgroundColor3 = Color3.fromRGB(35,35,45)
 ContentFrame.Parent = Window
 
--- Helper Functions
+-- ====== Helper Functions ======
 local function createTab(name)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, 0, 0, 50)
-    btn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+    btn.Size = UDim2.new(1,0,0,50)
+    btn.BackgroundColor3 = Color3.fromRGB(60,60,70)
     btn.Text = name
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextColor3 = Color3.fromRGB(255,255,255)
     btn.Font = Enum.Font.SourceSansBold
     btn.TextSize = 18
     btn.Parent = TabsFrame
     return btn
 end
 
-local function createButton(parent, text, callback)
+local function createButton(parent,text,callback)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, -20, 0, 30)
-    btn.Position = UDim2.new(0, 10, 0, (#parent:GetChildren())*35)
-    btn.BackgroundColor3 = Color3.fromRGB(70, 70, 90)
+    btn.Size = UDim2.new(1,-20,0,30)
+    btn.Position = UDim2.new(0,10,0,#parent:GetChildren()*35)
+    btn.BackgroundColor3 = Color3.fromRGB(70,70,90)
     btn.Text = text
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextColor3 = Color3.fromRGB(255,255,255)
     btn.Font = Enum.Font.SourceSans
     btn.TextSize = 16
     btn.Parent = parent
@@ -137,7 +135,7 @@ local function createButton(parent, text, callback)
     return btn
 end
 
--- Main Page Example
+-- ====== Main Page ======
 local mainPage = Instance.new("Frame")
 mainPage.Size = UDim2.new(1,0,1,0)
 mainPage.BackgroundTransparency = 1
@@ -149,4 +147,7 @@ mainTabBtn.MouseButton1Click:Connect(function()
     mainPage.Visible = true
 end)
 
-createButton(mainPage, "Do Action", function() print("Main action executed!") end)
+createButton(mainPage,"Do Action",function()
+    print("Main action executed!")
+end)
+
