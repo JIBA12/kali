@@ -1,22 +1,27 @@
---// KaLi Hub - Rayfield UI (STABLE)
+--// KaLi Hub - Rayfield UI (FIXED & EXECUTING)
 
--- Load Rayfield Library
-local Rayfield = loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/shlexware/Rayfield/main/source"
-))()
+-- Load Rayfield Library (CORRECT URL)
+local Rayfield
+local success, err = pcall(function()
+    Rayfield = loadstring(game:HttpGet(
+        "https://raw.githubusercontent.com/shlexware/Rayfield/main/source.lua"
+    ))()
+end)
+
+if not success or not Rayfield then
+    warn("Rayfield failed to load:", err)
+    return
+end
 
 -- Create Window
 local Window = Rayfield:CreateWindow({
     Name = "KaLi Hub",
     LoadingTitle = "KaLi Hub",
-    LoadingSubtitle = "by YourName",
+    LoadingSubtitle = "Rayfield UI",
     ConfigurationSaving = {
         Enabled = true,
         FolderName = "KaLiHub",
         FileName = "Config"
-    },
-    Discord = {
-        Enabled = false
     },
     KeySystem = false
 })
@@ -25,9 +30,7 @@ local Window = Rayfield:CreateWindow({
 local MainTab = Window:CreateTab("Main", 4483362458)
 local SettingsTab = Window:CreateTab("Settings", 4483362458)
 
--- ======================
--- MAIN TAB
--- ======================
+-- ===== MAIN TAB =====
 MainTab:CreateButton({
     Name = "Do Action",
     Callback = function()
@@ -53,9 +56,7 @@ MainTab:CreateSlider({
     end
 })
 
--- ======================
--- SETTINGS TAB
--- ======================
+-- ===== SETTINGS TAB =====
 SettingsTab:CreateDropdown({
     Name = "Mode",
     Options = {"Easy", "Medium", "Hard"},
