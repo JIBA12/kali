@@ -1,120 +1,92 @@
---// KaLi Hub - Orion UI
-local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"))()
-local Window = OrionLib:MakeWindow({
-    Name = "KaLi Hub",
-    HidePremium = true,          -- hide premium features
-    SaveConfig = true,           -- allows saving configs
-    ConfigFolder = "KaLiHub"     -- folder to save config
+--// New GUI for Project
+local Library = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/Rain-Design/Libraries/main/Shaman/Library.lua"
+))()
+
+local Flags = Library.Flags
+
+--// Window
+local Window = Library:Window({
+    Text = "KaLi Hub"
 })
 
 --// Tabs
-local MainTab = Window:MakeTab({
-    Name = "Main",
-    Icon = "rbxassetid://6034818375", -- icon asset
-    PremiumOnly = false
-})
+local MainTab = Window:Tab({ Text = "Main" })
+local SettingsTab = Window:Tab({ Text = "Settings" })
 
-local SettingsTab = Window:MakeTab({
-    Name = "Settings",
-    Icon = "rbxassetid://6034818375",
-    PremiumOnly = false
-})
+--// Sections
+local MainSection = MainTab:Section({ Text = "Features" })
+local SettingsSection = SettingsTab:Section({ Text = "Options" })
 
-local AboutTab = Window:MakeTab({
-    Name = "About",
-    Icon = "rbxassetid://6034818375",
-    PremiumOnly = false
-})
-
---// Main Tab Features
-MainTab:AddButton({
-    Name = "Do Action",
+--// Main Section Features
+MainSection:Button({
+    Text = "Do Action",
+    Tooltip = "Executes main action",
     Callback = function()
-        print("Action executed!")
+        print("Main action executed!")
     end
 })
 
-MainTab:AddToggle({
-    Name = "Enable Feature",
+MainSection:Toggle({
+    Text = "Enable Feature",
     Default = false,
     Callback = function(state)
         print("Feature enabled:", state)
     end
 })
 
-MainTab:AddSlider({
-    Name = "Power Level",
-    Min = 0,
-    Max = 100,
+MainSection:Slider({
+    Text = "Power Level",
+    Minimum = 0,
+    Maximum = 100,
     Default = 50,
-    Color = Color3.fromRGB(0, 170, 255),
-    Increment = 1,
+    Flag = "PowerLevel",
     Callback = function(value)
         print("Power Level:", value)
     end
 })
 
-MainTab:AddDropdown({
-    Name = "Target Part",
-    Default = "Head",
-    Options = {"Head", "Torso", "Random"},
-    Callback = function(option)
-        print("Target part:", option)
+MainSection:ColorPicker({
+    Text = "Select Color",
+    Default = Color3.fromRGB(255, 255, 255),
+    Callback = function(color)
+        print("Color chosen:", color)
     end
 })
 
-MainTab:AddBind({
-    Name = "Action Key",
-    Default = Enum.KeyCode.E,
-    Hold = false,
-    Callback = function()
-        print("Keybind pressed!")
-    end
-})
-
---// Settings Tab Features
-SettingsTab:AddToggle({
-    Name = "Show Notifications",
+--// Settings Section
+SettingsSection:Toggle({
+    Text = "Show Notifications",
     Default = true,
     Callback = function(state)
-        print("Notifications:", state)
+        print("Notifications enabled:", state)
     end
 })
 
-SettingsTab:AddDropdown({
-    Name = "Mode",
-    Default = "Easy",
-    Options = {"Easy", "Medium", "Hard"},
+SettingsSection:Dropdown({
+    Text = "Mode",
+    List = {"Easy", "Medium", "Hard"},
+    Flag = "ModeSelect",
     Callback = function(selection)
         print("Mode selected:", selection)
     end
 })
 
-SettingsTab:AddButton({
-    Name = "Save Config",
-    Callback = function()
-        OrionLib:SaveConfig()
-        print("Config saved!")
+SettingsSection:Input({
+    Text = "Set Name",
+    Placeholder = "Enter name here",
+    Flag = "PlayerName",
+    Callback = function(text)
+        print("Name set to:", text)
     end
 })
 
-SettingsTab:AddButton({
-    Name = "Load Config",
-    Callback = function()
-        OrionLib:LoadConfig()
-        print("Config loaded!")
-    end
+--// Label Example
+local infoLabel = SettingsSection:Label({
+    Text = "Created by YourName",
+    Color = Color3.fromRGB(150, 200, 255),
+    Tooltip = "Credits"
 })
 
---// About Tab
-AboutTab:AddLabel("Created by YourName")
-AboutTab:AddLabel("Version 1.0")
-AboutTab:AddLabel("Orion UI Library")
-
---// Show notification
-OrionLib:MakeNotification({
-    Name = "KaLi Hub",
-    Content = "GUI Loaded Successfully!",
-    Image = "rbxassetid://6034818375",
-    Time = 5
-})
+--// Default tab selected
+MainTab:Select()
