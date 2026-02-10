@@ -1,4 +1,4 @@
---// KaLi Hub - STABLE SHAMAN GUI (NO SECTION BUGS)
+--// KaLi Hub - Shaman GUI (Fade-In + Theme, STABLE)
 
 -- Load library safely
 local Library
@@ -15,26 +15,41 @@ end
 
 Library = lib
 local Flags = Library.Flags
+local TweenService = game:GetService("TweenService")
 
--- Window
+-- =====================
+-- THEME (B)
+-- =====================
+Library:Theme({
+    Background = Color3.fromRGB(20, 20, 25),
+    Secondary = Color3.fromRGB(30, 30, 38),
+    Accent = Color3.fromRGB(80, 160, 255),
+    Outline = Color3.fromRGB(40, 40, 50),
+    Text = Color3.fromRGB(235, 235, 235)
+})
+
+-- =====================
+-- WINDOW
+-- =====================
 local Window = Library:Window({
     Text = "KaLi Hub"
 })
 
--- Tabs
+-- =====================
+-- TABS
+-- =====================
 local MainTab = Window:Tab({ Text = "Main" })
 local SettingsTab = Window:Tab({ Text = "Settings" })
 
--- Sections (THIS is the part that was breaking before)
-local MainSection = MainTab:Section({
-    Text = "Features"
-})
+-- =====================
+-- SECTIONS
+-- =====================
+local MainSection = MainTab:Section({ Text = "Features" })
+local SettingsSection = SettingsTab:Section({ Text = "Options" })
 
-local SettingsSection = SettingsTab:Section({
-    Text = "Options"
-})
-
--- ===== MAIN SECTION =====
+-- =====================
+-- MAIN FEATURES
+-- =====================
 MainSection:Button({
     Text = "Do Action",
     Callback = function()
@@ -61,7 +76,9 @@ MainSection:Slider({
     end
 })
 
--- ===== SETTINGS SECTION =====
+-- =====================
+-- SETTINGS
+-- =====================
 SettingsSection:Dropdown({
     Text = "Mode",
     List = {"Easy", "Medium", "Hard"},
@@ -81,17 +98,46 @@ SettingsSection:Input({
 })
 
 SettingsSection:Label({
-    Text = "Created by KaLi Hub",
-    Color = Color3.fromRGB(120, 200, 255)
+    Text = "KaLi Hub © 2026",
+    Color = Color3.fromRGB(120, 180, 255)
 })
 
--- Notify
+-- =====================
+-- FADE-IN ANIMATION (A)
+-- =====================
+task.wait() -- let UI fully render first
+
+local gui = Library.UI
+if gui then
+    gui.Enabled = true
+
+    for _, obj in ipairs(gui:GetDescendants()) do
+        if obj:IsA("Frame") then
+            obj.BackgroundTransparency = 1
+            TweenService:Create(
+                obj,
+                TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                {BackgroundTransparency = 0}
+            ):Play()
+        elseif obj:IsA("TextLabel") or obj:IsA("TextButton") then
+            obj.TextTransparency = 1
+            TweenService:Create(
+                obj,
+                TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                {TextTransparency = 0}
+            ):Play()
+        end
+    end
+end
+
+-- =====================
+-- NOTIFY
+-- =====================
 Library:Notify({
     Title = "KaLi Hub",
-    Text = "GUI Loaded Successfully",
+    Text = "Loaded Successfully",
     Duration = 4
 })
 
--- Select tab LAST
-task.wait()
+-- Select default tab LAST
 MainTab:Select()
