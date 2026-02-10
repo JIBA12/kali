@@ -40,6 +40,7 @@ pcall(function()
     title.Text = "KaLi Hub"
     title.TextColor3 = Color3.fromRGB(0,170,255)
     title.BorderSizePixel = 0
+    title.AutoButtonColor = false
     title.Parent = main
 
     -- Minimize
@@ -113,7 +114,7 @@ pcall(function()
         end)
 
         UserInputService.InputChanged:Connect(function(input)
-            if input == dragInput and dragging then
+            if dragging and input == dragInput then
                 local delta = input.Position - startMousePos
                 frame.Position = UDim2.new(0, startPos.X.Offset + delta.X, 0, startPos.Y.Offset + delta.Y)
             end
