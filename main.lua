@@ -1,4 +1,4 @@
--- Remove old GUI if exists
+-- Remove old GUI
 if game:GetService("CoreGui"):FindFirstChild("KaLiHub") then
     game:GetService("CoreGui").KaLiHub:Destroy()
 end
@@ -7,15 +7,7 @@ end
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "KaLiHub"
 ScreenGui.ResetOnSpawn = false
-
--- Different executors have different CoreGui behavior
-local success, err = pcall(function()
-    ScreenGui.Parent = game:GetService("CoreGui")
-end)
-if not success then
-    -- fallback to PlayerGui if CoreGui fails
-    ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-end
+ScreenGui.Parent = game:GetService("CoreGui") or game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
 -- Main Window
 local Window = Instance.new("Frame")
@@ -25,9 +17,42 @@ Window.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
 Window.BorderSizePixel = 0
 Window.Parent = ScreenGui
 
--- Title
+-- Make Window Draggable
+local dragging
+local dragInput
+local dragStart
+local startPos
+
+Window.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = Window.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+Window.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if dragging and input == dragInput then
+        local delta = input.Position - dragStart
+        Window.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X,
+                                    startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+-- Title Bar
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, 0, 0, 30)
+Title.Size = UDim2.new(1, -30, 0, 30)
 Title.Position = UDim2.new(0, 0, 0, 0)
 Title.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 Title.Text = "KaLi Hub"
@@ -36,7 +61,82 @@ Title.Font = Enum.Font.SourceSansBold
 Title.TextSize = 20
 Title.Parent = Window
 
--- Tabs Frame
+-- Minimize Button
+local MinimizeBtn = Instance.new("TextButton")
+MinimizeBtn.Size = UDim2.new(0, 30, 0, 30)
+MinimizeBtn.Position = UDim2.new(1, -30, 0, 0)
+MinimizeBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+MinimizeBtn.Text = "_"
+MinimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+MinimizeBtn.Font = Enum.Font.SourceSansBold
+MinimizeBtn.TextSize = 20
+MinimizeBtn.Parent = Window
+
+-- Floating Icon
+local FloatingIcon = Instance.new("Frame")
+FloatingIcon.Size = UDim2.new(0, 50, 0, 50)
+FloatingIcon.Position = UDim2.new(0.1, 0, 0.1, 0)
+FloatingIcon.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+FloatingIcon.Visible = false
+FloatingIcon.Parent = ScreenGui
+
+local IconLabel = Instance.new("TextLabel")
+IconLabel.Size = UDim2.new(1, 0, 1, 0)
+IconLabel.BackgroundTransparency = 1
+IconLabel.Text = "KaLi"
+IconLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+IconLabel.Font = Enum.Font.SourceSansBold
+IconLabel.TextSize = 18
+IconLabel.Parent = FloatingIcon
+
+-- Make Floating Icon draggable
+local draggingIcon
+local iconInput
+local iconStart
+local iconPos
+
+FloatingIcon.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        draggingIcon = true
+        iconStart = input.Position
+        iconPos = FloatingIcon.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                draggingIcon = false
+            end
+        end)
+    end
+end)
+
+FloatingIcon.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        iconInput = input
+    end
+end)
+
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if draggingIcon and input == iconInput then
+        local delta = input.Position - iconStart
+        FloatingIcon.Position = UDim2.new(iconPos.X.Scale, iconPos.X.Offset + delta.X,
+                                           iconPos.Y.Scale, iconPos.Y.Offset + delta.Y)
+    end
+end)
+
+-- Minimize & Restore Logic
+MinimizeBtn.MouseButton1Click:Connect(function()
+    Window.Visible = false
+    FloatingIcon.Visible = true
+end)
+
+FloatingIcon.MouseButton1Click:Connect(function()
+    FloatingIcon.Visible = false
+    Window.Visible = true
+end)
+
+-- ===============================
+-- Tabs & Content
+-- ===============================
+
 local TabsFrame = Instance.new("Frame")
 TabsFrame.Size = UDim2.new(0, 120, 1, -30)
 TabsFrame.Position = UDim2.new(0, 0, 0, 30)
@@ -44,7 +144,6 @@ TabsFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
 TabsFrame.BorderSizePixel = 0
 TabsFrame.Parent = Window
 
--- Content Frame
 local ContentFrame = Instance.new("Frame")
 ContentFrame.Size = UDim2.new(1, -120, 1, -30)
 ContentFrame.Position = UDim2.new(0, 120, 0, 30)
@@ -52,7 +151,7 @@ ContentFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
 ContentFrame.BorderSizePixel = 0
 ContentFrame.Parent = Window
 
--- Helper to create tabs
+-- Tab Helper
 local function createTab(name)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(1, 0, 0, 50)
@@ -66,7 +165,6 @@ local function createTab(name)
     return btn
 end
 
--- Helper to create sections
 local function createSection(parent, text)
     local lbl = Instance.new("TextLabel")
     lbl.Size = UDim2.new(1, -20, 0, 25)
@@ -81,7 +179,6 @@ local function createSection(parent, text)
     return lbl
 end
 
--- Helper to create buttons
 local function createButton(parent, text, callback)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(1, -20, 0, 30)
@@ -96,7 +193,6 @@ local function createButton(parent, text, callback)
     return btn
 end
 
--- Helper to create toggles
 local function createToggle(parent, text, default, callback)
     local frame = Instance.new("Frame")
     frame.Size = UDim2.new(1, -20, 0, 30)
@@ -129,11 +225,7 @@ local function createToggle(parent, text, default, callback)
     end)
 end
 
--- ===============================
--- Tabs & Content
--- ===============================
-
--- Main Tab
+-- Main Page
 local mainPage = Instance.new("Frame")
 mainPage.Size = UDim2.new(1, 0, 1, 0)
 mainPage.BackgroundTransparency = 1
@@ -152,7 +244,7 @@ createSection(mainPage, "Features")
 createButton(mainPage, "Do Action", function() print("Main action executed!") end)
 createToggle(mainPage, "Enable Feature", false, function(state) print("Feature enabled:", state) end)
 
--- Settings Tab
+-- Settings Page
 local settingsPage = Instance.new("Frame")
 settingsPage.Size = UDim2.new(1, 0, 1, 0)
 settingsPage.BackgroundTransparency = 1
