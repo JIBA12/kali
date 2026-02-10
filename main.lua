@@ -1,5 +1,7 @@
---// KaLi Hub - Orion UI with Circular Icon Notifications
+--// KaLi Hub - Orion UI Fixed Version
 local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"))()
+
+-- Create window
 local Window = OrionLib:MakeWindow({
     Name = "KaLi Hub",
     HidePremium = true,
@@ -7,7 +9,7 @@ local Window = OrionLib:MakeWindow({
     ConfigFolder = "KaLiHub"
 })
 
---// Custom Notification Function
+-- Safe Circular Notification Function
 local function CircularNotification(name, content, image, time)
     OrionLib:MakeNotification({
         Name = name,
@@ -15,43 +17,32 @@ local function CircularNotification(name, content, image, time)
         Image = image,
         Time = time or 5,
         Callback = function()
-            -- Get the latest notification frame
-            local notif = OrionLib.NotificationsContainer:FindFirstChildWhichIsA("Frame", true)
-            if notif then
-                local icon = notif:FindFirstChild("Icon", true)
-                if icon then
-                    icon.Size = UDim2.new(0, 30, 0, 30)       -- small size
-                    icon.BackgroundTransparency = 0
-                    icon.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-                    local corner = Instance.new("UICorner")
-                    corner.CornerRadius = UDim.new(0.5, 0)     -- circular
-                    corner.Parent = icon
-                end
+            -- Wait until the notification frame exists
+            local notif
+            repeat
+                notif = OrionLib.NotificationsContainer:FindFirstChildWhichIsA("Frame", true)
+                task.wait(0.05)
+            until notif
+
+            local icon = notif:FindFirstChild("Icon", true)
+            if icon then
+                icon.Size = UDim2.new(0, 30, 0, 30)       -- small icon
+                icon.BackgroundTransparency = 0
+                icon.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+                local corner = Instance.new("UICorner")
+                corner.CornerRadius = UDim.new(0.5, 0)     -- circular
+                corner.Parent = icon
             end
         end
     })
 end
 
 --// Tabs
-local MainTab = Window:MakeTab({
-    Name = "Main",
-    Icon = "rbxassetid://6034818375",
-    PremiumOnly = false
-})
+local MainTab = Window:MakeTab({ Name = "Main", Icon = "rbxassetid://6034818375" })
+local SettingsTab = Window:MakeTab({ Name = "Settings", Icon = "rbxassetid://6034818375" })
+local AboutTab = Window:MakeTab({ Name = "About", Icon = "rbxassetid://6034818375" })
 
-local SettingsTab = Window:MakeTab({
-    Name = "Settings",
-    Icon = "rbxassetid://6034818375",
-    PremiumOnly = false
-})
-
-local AboutTab = Window:MakeTab({
-    Name = "About",
-    Icon = "rbxassetid://6034818375",
-    PremiumOnly = false
-})
-
---// Main Tab Features
+--// Main Tab
 MainTab:AddButton({
     Name = "Do Action",
     Callback = function()
@@ -74,8 +65,8 @@ MainTab:AddSlider({
     Min = 0,
     Max = 100,
     Default = 50,
-    Color = Color3.fromRGB(0, 170, 255),
     Increment = 1,
+    Color = Color3.fromRGB(0, 170, 255),
     Callback = function(value)
         print("Power Level:", value)
     end
@@ -99,7 +90,7 @@ MainTab:AddBind({
     end
 })
 
---// Settings Tab Features
+--// Settings Tab
 SettingsTab:AddToggle({
     Name = "Show Notifications",
     Default = true,
@@ -140,8 +131,8 @@ AboutTab:AddLabel("Created by YourName")
 AboutTab:AddLabel("Version 2.0")
 AboutTab:AddLabel("Using Orion UI Library")
 
---// Show initial notification with circular icon
+--// Initial notification with circular icon
 CircularNotification("KaLi Hub", "GUI Loaded Successfully!", "rbxassetid://6034818375", 5)
 
---// Default tab selection
+-- Select default tab
 MainTab:Select()
