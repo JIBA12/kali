@@ -1,74 +1,106 @@
--- KaLi Hub using KaLiUI from GitHub
+-- KaLi Hub using Hattori V4 UI Library
+local Hattori = loadstring(game:HttpGet("https://raw.githubusercontent.com/GhostDuckyy/Ui-Librarys/main/Hattori/V4/source.lua"))()
 
--- Load KaLiUI library from your repo
-local KaLiUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/JIBA12/kali/main/KaLiUI.lua"))()
-
--- Create main window
-local Window = KaLiUI:CreateWindow("KaLi Hub")
+-- Create UI
+local Window = Hattori:Window({
+    Name = "KaLi Hub",
+    Size = UDim2.new(0, 500, 0, 400),
+    Theme = "Dark"
+})
 
 --===========================--
 -- TABS
 --===========================--
-local MainTab = Window:Tab("Main")
-local SettingsTab = Window:Tab("Settings")
-local AboutTab = Window:Tab("About")
+local MainTab = Window:Tab({Name = "Main"})
+local SettingsTab = Window:Tab({Name = "Settings"})
+local AboutTab = Window:Tab({Name = "About"})
 
 --===========================--
 -- MAIN TAB
 --===========================--
-local MainSection = MainTab:Section("Features")
+local MainSection = MainTab:Section({Name = "Features"})
 
-MainSection:Button("Do Action", function()
+MainSection:Button({Name = "Do Action", Callback = function()
     print("Main action executed!")
-end)
+end})
 
-MainSection:Toggle("Enable Feature", false, function(state)
+MainSection:Toggle({Name = "Enable Feature", Default = false, Callback = function(state)
     print("Feature enabled:", state)
-end)
+end})
 
-MainSection:Slider("Power Level", 50, function(value)
-    print("Power Level:", value)
-end)
+MainSection:Slider({
+    Name = "Power Level",
+    Min = 0,
+    Max = 100,
+    Default = 50,
+    Callback = function(value)
+        print("Power Level:", value)
+    end
+})
 
-MainSection:Dropdown("Target Part", {"Head", "Torso", "Random"}, function(option)
-    print("Target part:", option)
-end)
+MainSection:Dropdown({
+    Name = "Target Part",
+    Options = {"Head", "Torso", "Random"},
+    Default = "Head",
+    Callback = function(option)
+        print("Target part:", option)
+    end
+})
 
-MainSection:Input("Walkspeed", "Enter walkspeed", function(text)
-    print("Walkspeed set to:", text)
-end)
+MainSection:Input({
+    Name = "Walkspeed",
+    Placeholder = "Enter walkspeed",
+    Callback = function(text)
+        print("Walkspeed set to:", text)
+    end
+})
 
 --===========================--
 -- SETTINGS TAB
 --===========================--
-local SettingsSection = SettingsTab:Section("Options")
+local SettingsSection = SettingsTab:Section({Name = "Options"})
 
-SettingsSection:Toggle("Show Notifications", true, function(state)
+SettingsSection:Toggle({Name = "Show Notifications", Default = true, Callback = function(state)
     print("Notifications enabled:", state)
-end)
+end})
 
-SettingsSection:Dropdown("Mode", {"Easy", "Medium", "Hard"}, function(selection)
-    print("Mode selected:", selection)
-end)
+SettingsSection:Dropdown({
+    Name = "Mode",
+    Options = {"Easy", "Medium", "Hard"},
+    Default = "Easy",
+    Callback = function(option)
+        print("Mode selected:", option)
+    end
+})
 
-SettingsSection:Input("Set Name", "Enter your name", function(text)
-    print("Name set to:", text)
-end)
+SettingsSection:Input({
+    Name = "Set Name",
+    Placeholder = "Enter your name",
+    Callback = function(text)
+        print("Name set to:", text)
+    end
+})
 
 -- Theme switcher
-SettingsSection:Dropdown("Theme", {"Dark","Light"}, function(option)
-    if option == "Dark" then
-        Window.Frame.BackgroundColor3 = Color3.fromRGB(30,30,30)
-    else
-        Window.Frame.BackgroundColor3 = Color3.fromRGB(220,220,220)
+SettingsSection:Dropdown({
+    Name = "Theme",
+    Options = {"Dark","Light"},
+    Default = "Dark",
+    Callback = function(option)
+        Window:ChangeTheme(option)
+        print("Theme changed to:", option)
     end
-    print("Theme changed to:", option)
-end)
+})
 
 --===========================--
 -- ABOUT TAB
 --===========================--
-local AboutSection = AboutTab:Section("Info")
+local AboutSection = AboutTab:Section({Name = "Info"})
 
-AboutSection:Label("KaLi Hub", Color3.fromRGB(255,255,255))
-AboutSection:Label("
+AboutSection:Label({Text = "KaLi Hub", Color = Color3.fromRGB(255,255,255)})
+AboutSection:Label({Text = "Version: 1.0", Color = Color3.fromRGB(180,180,180)})
+AboutSection:Label({Text = "Created by YourName", Color = Color3.fromRGB(150,200,255)})
+
+AboutSection:Button({Name = "Show Credits", Callback = function()
+    print("KaLi Hub created by YourName")
+end})
