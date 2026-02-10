@@ -1,73 +1,86 @@
---// KaLi Hub (FIXED - SAME PROJECT)
+--// KaLi Hub - Mercury UI
+local Mercury = loadstring(game:HttpGet("https://raw.githubusercontent.com/deeeity/mercury-lib/master/src.lua"))()
 
-local Library = loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/Rain-Design/Libraries/main/Shaman/Library.lua"
-))()
+-- CREATE WINDOW
+local Window = Mercury:Create{
+    Name = "KaLi Hub",
+    Size = UDim2.fromOffset(500, 400),
+    Theme = "Dark",
+    IntroText = "KaLi Hub Loaded"
+}
 
---// Window
-local Window = Library:Window({
-    Text = "KaLi Hub"
-})
+-- CREATE TABS
+local MainTab = Window:Tab{ Name = "Main" }
+local SettingsTab = Window:Tab{ Name = "Settings" }
 
---// Tabs
-local MainTab = Window:Tab({ Text = "Main" })
-local SettingsTab = Window:Tab({ Text = "Settings" })
+-- MAIN TAB SECTION
+local MainSection = MainTab:Section{ Name = "Features" }
 
---// MAIN TAB
-MainTab:Button({
-    Text = "Do Action",
+-- Add Buttons, Toggles, Sliders
+MainSection:Button{
+    Name = "Do Action",
     Callback = function()
         print("Main action executed!")
     end
-})
+}
 
-MainTab:Toggle({
-    Text = "Enable Feature",
+MainSection:Toggle{
+    Name = "Enable Feature",
     Default = false,
     Callback = function(state)
         print("Feature enabled:", state)
     end
-})
+}
 
-MainTab:Slider({
-    Text = "Power Level",
+MainSection:Slider{
+    Name = "Power Level",
+    Default = 50,
     Min = 0,
     Max = 100,
-    Default = 50,
     Callback = function(value)
         print("Power Level:", value)
     end
-})
+}
 
---// SETTINGS TAB
-SettingsTab:Toggle({
-    Text = "Show Notifications",
+MainSection:Dropdown{
+    Name = "Target Part",
+    Default = "Head",
+    Options = {"Head", "Torso", "Random"},
+    Callback = function(option)
+        print("Target part:", option)
+    end
+}
+
+-- SETTINGS TAB SECTION
+local SettingsSection = SettingsTab:Section{ Name = "Options" }
+
+SettingsSection:Toggle{
+    Name = "Show Notifications",
     Default = true,
     Callback = function(state)
         print("Notifications enabled:", state)
     end
-})
+}
 
-SettingsTab:Dropdown({
-    Text = "Mode",
-    List = {"Easy", "Medium", "Hard"},
+SettingsSection:Dropdown{
+    Name = "Mode",
     Default = "Easy",
-    Callback = function(choice)
-        print("Mode selected:", choice)
+    Options = {"Easy", "Medium", "Hard"},
+    Callback = function(selection)
+        print("Mode selected:", selection)
     end
-})
+}
 
-SettingsTab:Input({
-    Text = "Set Name",
+SettingsSection:Input{
+    Name = "Set Name",
     Placeholder = "Enter name here",
     Callback = function(text)
         print("Name set to:", text)
     end
-})
+}
 
-SettingsTab:Label({
+SettingsSection:Label{
     Text = "Created by KaLi Hub"
-})
+}
 
---// REQUIRED (THIS IS WHAT YOU WERE MISSING)
-Library:Init()
+-- Mercury automatically handles drag, themes, and smooth animation
