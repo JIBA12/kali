@@ -72,22 +72,19 @@ MinimizeBtn.Font = Enum.Font.SourceSansBold
 MinimizeBtn.TextSize = 20
 MinimizeBtn.Parent = Window
 
--- Floating Icon
-local FloatingIcon = Instance.new("Frame")
+-- Floating Icon (fixed)
+local FloatingIcon = Instance.new("TextButton")
 FloatingIcon.Size = UDim2.new(0, 50, 0, 50)
 FloatingIcon.Position = UDim2.new(0.1, 0, 0.1, 0)
 FloatingIcon.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+FloatingIcon.Text = "KaLi"
+FloatingIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
+FloatingIcon.Font = Enum.Font.SourceSansBold
+FloatingIcon.TextSize = 18
 FloatingIcon.Visible = false
+FloatingIcon.AutoButtonColor = true
 FloatingIcon.Parent = ScreenGui
-
-local IconLabel = Instance.new("TextLabel")
-IconLabel.Size = UDim2.new(1, 0, 1, 0)
-IconLabel.BackgroundTransparency = 1
-IconLabel.Text = "KaLi"
-IconLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-IconLabel.Font = Enum.Font.SourceSansBold
-IconLabel.TextSize = 18
-IconLabel.Parent = FloatingIcon
+FloatingIcon.ZIndex = 10
 
 -- Make Floating Icon draggable
 local draggingIcon
@@ -133,10 +130,7 @@ FloatingIcon.MouseButton1Click:Connect(function()
     Window.Visible = true
 end)
 
--- ===============================
 -- Tabs & Content
--- ===============================
-
 local TabsFrame = Instance.new("Frame")
 TabsFrame.Size = UDim2.new(0, 120, 1, -30)
 TabsFrame.Position = UDim2.new(0, 0, 0, 30)
@@ -151,7 +145,7 @@ ContentFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
 ContentFrame.BorderSizePixel = 0
 ContentFrame.Parent = Window
 
--- Tab Helper
+-- Helper functions
 local function createTab(name)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(1, 0, 0, 50)
