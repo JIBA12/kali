@@ -7,7 +7,7 @@ local Flags = Library.Flags
 
 --// Window
 local Window = Library:Window({
-    Text = "MyProject GUI"
+    Text = "KaLi Hub"
 })
 
 --// Tabs
