@@ -1,6 +1,6 @@
 -- Make sure HTTP requests are enabled in Roblox Studio
 
--- Load Hattori V4 UI library
+-- Load Hattori V4 safely
 local success, Hattori = pcall(function()
     return loadstring(game:HttpGet("https://raw.githubusercontent.com/GhostDuckyy/Ui-Librarys/main/Hattori/V4/source.lua"))()
 end)
@@ -10,18 +10,25 @@ if not success then
     return
 end
 
--- Create the main window
+-- Create main window
 local Window = Hattori:Window({
     Name = "KaLi Hub",
     Size = UDim2.new(0, 500, 0, 400),
     Theme = "Dark"
 })
 
--- Create tabs
+-- ===============================
+-- Main Tab
+-- ===============================
 local MainTab = Window:Tab("Main")
-local SettingsTab = Window:Tab("Settings")
 
--- Main Tab Features
+-- Section Header: Features
+MainTab:Label({
+    Text = "Features",
+    Color = Color3.fromRGB(200, 200, 255)
+})
+
+-- Button
 MainTab:Button({
     Name = "Do Action",
     Callback = function()
@@ -29,6 +36,7 @@ MainTab:Button({
     end
 })
 
+-- Toggle
 MainTab:Toggle({
     Name = "Enable Feature",
     Default = false,
@@ -37,6 +45,7 @@ MainTab:Toggle({
     end
 })
 
+-- Slider
 MainTab:Slider({
     Name = "Power Level",
     Min = 0,
@@ -47,6 +56,7 @@ MainTab:Slider({
     end
 })
 
+-- Color Picker
 MainTab:Colorpicker({
     Name = "Select Color",
     Default = Color3.fromRGB(255, 255, 255),
@@ -55,7 +65,18 @@ MainTab:Colorpicker({
     end
 })
 
--- Settings Tab Features
+-- ===============================
+-- Settings Tab
+-- ===============================
+local SettingsTab = Window:Tab("Settings")
+
+-- Section Header: Options
+SettingsTab:Label({
+    Text = "Options",
+    Color = Color3.fromRGB(200, 200, 255)
+})
+
+-- Toggle
 SettingsTab:Toggle({
     Name = "Show Notifications",
     Default = true,
@@ -64,6 +85,7 @@ SettingsTab:Toggle({
     end
 })
 
+-- Dropdown
 SettingsTab:Dropdown({
     Name = "Mode",
     Options = {"Easy", "Medium", "Hard"},
@@ -72,6 +94,7 @@ SettingsTab:Dropdown({
     end
 })
 
+-- Input
 SettingsTab:Input({
     Name = "Set Name",
     Placeholder = "Enter name here",
@@ -80,11 +103,13 @@ SettingsTab:Input({
     end
 })
 
--- Label Example
+-- Label / Credits
 SettingsTab:Label({
     Text = "Created by YourName",
     Color = Color3.fromRGB(150, 200, 255)
 })
 
--- Optional: select default tab
+-- ===============================
+-- Default tab selection
+-- ===============================
 MainTab:Select()
