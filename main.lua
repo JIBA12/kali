@@ -1,4 +1,4 @@
--- ===== Executor-safe KaLi Hub GUI =====
+-- ===== Executor-safe KaLi Hub GUI (Fixed Layout) =====
 local player = game:GetService("Players").LocalPlayer
 local playerGui = player:FindFirstChild("PlayerGui")
 
@@ -106,6 +106,12 @@ ContentFrame.Position = UDim2.new(0,120,0,30)
 ContentFrame.BackgroundColor3 = Color3.fromRGB(35,35,45)
 ContentFrame.Parent = Window
 
+-- Add UIListLayout to automatically position buttons
+local mainLayout = Instance.new("UIListLayout")
+mainLayout.Padding = UDim.new(0,5)
+mainLayout.SortOrder = Enum.SortOrder.LayoutOrder
+mainLayout.Parent = ContentFrame
+
 -- Helper functions
 local function createTab(name)
     local btn = Instance.new("TextButton")
@@ -121,8 +127,7 @@ end
 
 local function createButton(parent,text,callback)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1,-20,0,30)
-    btn.Position = UDim2.new(0,10,0,#parent:GetChildren()*35)
+    btn.Size = UDim2.new(1,-10,0,30)
     btn.BackgroundColor3 = Color3.fromRGB(70,70,90)
     btn.Text = text
     btn.TextColor3 = Color3.fromRGB(255,255,255)
@@ -137,7 +142,6 @@ end
 local mainPage = Instance.new("Frame")
 mainPage.Size = UDim2.new(1,0,1,0)
 mainPage.BackgroundTransparency = 1
-mainPage.Visible = true
 mainPage.Parent = ContentFrame
 
 local mainTabBtn = createTab("Main")
