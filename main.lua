@@ -1,4 +1,4 @@
---// KaLi Hub - Orion UI Full Version with Circular Icon Notifications
+--// KaLi Hub - Orion UI with Circular Icon Notifications
 local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"))()
 local Window = OrionLib:MakeWindow({
     Name = "KaLi Hub",
@@ -7,24 +7,24 @@ local Window = OrionLib:MakeWindow({
     ConfigFolder = "KaLiHub"
 })
 
---// Custom Notification Function (Circular Icon)
+--// Custom Notification Function
 local function CircularNotification(name, content, image, time)
     OrionLib:MakeNotification({
         Name = name,
         Content = content,
         Image = image,
-        Time = time or 3,
+        Time = time or 5,
         Callback = function()
-            -- Get the most recent notification frame
+            -- Get the latest notification frame
             local notif = OrionLib.NotificationsContainer:FindFirstChildWhichIsA("Frame", true)
             if notif then
                 local icon = notif:FindFirstChild("Icon", true)
                 if icon then
-                    icon.Size = UDim2.new(0, 30, 0, 30)           -- smaller size
+                    icon.Size = UDim2.new(0, 30, 0, 30)       -- small size
                     icon.BackgroundTransparency = 0
                     icon.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
                     local corner = Instance.new("UICorner")
-                    corner.CornerRadius = UDim.new(0.5, 0)         -- circular
+                    corner.CornerRadius = UDim.new(0.5, 0)     -- circular
                     corner.Parent = icon
                 end
             end
@@ -33,11 +33,25 @@ local function CircularNotification(name, content, image, time)
 end
 
 --// Tabs
-local MainTab = Window:MakeTab({ Name = "Main", Icon = "rbxassetid://6034818375" })
-local SettingsTab = Window:MakeTab({ Name = "Settings", Icon = "rbxassetid://6034818375" })
-local AboutTab = Window:MakeTab({ Name = "About", Icon = "rbxassetid://6034818375" })
+local MainTab = Window:MakeTab({
+    Name = "Main",
+    Icon = "rbxassetid://6034818375",
+    PremiumOnly = false
+})
 
---// Main Tab
+local SettingsTab = Window:MakeTab({
+    Name = "Settings",
+    Icon = "rbxassetid://6034818375",
+    PremiumOnly = false
+})
+
+local AboutTab = Window:MakeTab({
+    Name = "About",
+    Icon = "rbxassetid://6034818375",
+    PremiumOnly = false
+})
+
+--// Main Tab Features
 MainTab:AddButton({
     Name = "Do Action",
     Callback = function()
@@ -60,8 +74,8 @@ MainTab:AddSlider({
     Min = 0,
     Max = 100,
     Default = 50,
-    Increment = 1,
     Color = Color3.fromRGB(0, 170, 255),
+    Increment = 1,
     Callback = function(value)
         print("Power Level:", value)
     end
@@ -85,7 +99,7 @@ MainTab:AddBind({
     end
 })
 
---// Settings Tab
+--// Settings Tab Features
 SettingsTab:AddToggle({
     Name = "Show Notifications",
     Default = true,
@@ -126,8 +140,8 @@ AboutTab:AddLabel("Created by YourName")
 AboutTab:AddLabel("Version 2.0")
 AboutTab:AddLabel("Using Orion UI Library")
 
---// Initial Notification
-CircularNotification("KaLi Hub", "GUI Loaded Successfully!", "rbxassetid://6034818375", 3)
+--// Show initial notification with circular icon
+CircularNotification("KaLi Hub", "GUI Loaded Successfully!", "rbxassetid://6034818375", 5)
 
---// Default Tab
+--// Default tab selection
 MainTab:Select()
