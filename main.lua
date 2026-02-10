@@ -1,22 +1,32 @@
---// KaLi Hub - Mercury UI
+--// KaLi Hub - Mercury UI FULL CONVERT
+
+-- Wait for PlayerGui
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+repeat wait() until Player:FindFirstChild("PlayerGui")
+
+-- Load Mercury Library
 local Mercury = loadstring(game:HttpGet("https://raw.githubusercontent.com/deeeity/mercury-lib/master/src.lua"))()
 
--- CREATE WINDOW
+-- Create Window
 local Window = Mercury:Create{
     Name = "KaLi Hub",
-    Size = UDim2.fromOffset(500, 400),
+    Size = UDim2.fromOffset(500, 450),
     Theme = "Dark",
     IntroText = "KaLi Hub Loaded"
 }
 
--- CREATE TABS
+-- Create Tabs
 local MainTab = Window:Tab{ Name = "Main" }
 local SettingsTab = Window:Tab{ Name = "Settings" }
+local AboutTab = Window:Tab{ Name = "About" }
 
--- MAIN TAB SECTION
-local MainSection = MainTab:Section{ Name = "Features" }
+--===========================--
+--// MAIN TAB SECTION
+--===========================--
+local MainSection = MainTab:Section{ Name = "Main Features" }
 
--- Add Buttons, Toggles, Sliders
+-- Button
 MainSection:Button{
     Name = "Do Action",
     Callback = function()
@@ -24,6 +34,7 @@ MainSection:Button{
     end
 }
 
+-- Toggle
 MainSection:Toggle{
     Name = "Enable Feature",
     Default = false,
@@ -32,6 +43,7 @@ MainSection:Toggle{
     end
 }
 
+-- Slider
 MainSection:Slider{
     Name = "Power Level",
     Default = 50,
@@ -42,6 +54,7 @@ MainSection:Slider{
     end
 }
 
+-- Dropdown
 MainSection:Dropdown{
     Name = "Target Part",
     Default = "Head",
@@ -51,9 +64,21 @@ MainSection:Dropdown{
     end
 }
 
--- SETTINGS TAB SECTION
-local SettingsSection = SettingsTab:Section{ Name = "Options" }
+-- Input Box
+MainSection:Input{
+    Name = "Walkspeed",
+    Placeholder = "Enter walkspeed",
+    Callback = function(text)
+        print("Walkspeed set to:", text)
+    end
+}
 
+--===========================--
+--// SETTINGS TAB SECTION
+--===========================--
+local SettingsSection = SettingsTab:Section{ Name = "Settings Options" }
+
+-- Show Notifications Toggle
 SettingsSection:Toggle{
     Name = "Show Notifications",
     Default = true,
@@ -62,6 +87,7 @@ SettingsSection:Toggle{
     end
 }
 
+-- Mode Dropdown
 SettingsSection:Dropdown{
     Name = "Mode",
     Default = "Easy",
@@ -71,16 +97,33 @@ SettingsSection:Dropdown{
     end
 }
 
+-- Name Input
 SettingsSection:Input{
     Name = "Set Name",
-    Placeholder = "Enter name here",
+    Placeholder = "Enter your name",
     Callback = function(text)
         print("Name set to:", text)
     end
 }
 
-SettingsSection:Label{
-    Text = "Created by KaLi Hub"
+--===========================--
+--// ABOUT TAB SECTION
+--===========================--
+local AboutSection = AboutTab:Section{ Name = "Information" }
+
+AboutSection:Label{
+    Text = "KaLi Hub",
+    Color = Color3.fromRGB(255, 255, 255)
 }
 
--- Mercury automatically handles drag, themes, and smooth animation
+AboutSection:Label{
+    Text = "Version: 1.0",
+    Color = Color3.fromRGB(180, 180, 180)
+}
+
+AboutSection:Label{
+    Text = "Created by YourName",
+    Color = Color3.fromRGB(150, 200, 255)
+}
+
+-- Mercury automatically handles drag and theme
