@@ -1,92 +1,90 @@
---// New GUI for Project
-local Library = loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/Rain-Design/Libraries/main/Shaman/Library.lua"
-))()
+-- Make sure HTTP requests are enabled in Roblox Studio
 
-local Flags = Library.Flags
+-- Load Hattori V4 UI library
+local success, Hattori = pcall(function()
+    return loadstring(game:HttpGet("https://raw.githubusercontent.com/GhostDuckyy/Ui-Librarys/main/Hattori/V4/source.lua"))()
+end)
 
---// Window
-local Window = Library:Window({
-    Text = "KaLi Hub"
+if not success then
+    warn("Failed to load Hattori V4 UI Library: " .. tostring(Hattori))
+    return
+end
+
+-- Create the main window
+local Window = Hattori:Window({
+    Name = "KaLi Hub",
+    Size = UDim2.new(0, 500, 0, 400),
+    Theme = "Dark"
 })
 
---// Tabs
-local MainTab = Window:Tab({ Text = "Main" })
-local SettingsTab = Window:Tab({ Text = "Settings" })
+-- Create tabs
+local MainTab = Window:Tab("Main")
+local SettingsTab = Window:Tab("Settings")
 
---// Sections
-local MainSection = MainTab:Section({ Text = "Features" })
-local SettingsSection = SettingsTab:Section({ Text = "Options" })
-
---// Main Section Features
-MainSection:Button({
-    Text = "Do Action",
-    Tooltip = "Executes main action",
+-- Main Tab Features
+MainTab:Button({
+    Name = "Do Action",
     Callback = function()
         print("Main action executed!")
     end
 })
 
-MainSection:Toggle({
-    Text = "Enable Feature",
+MainTab:Toggle({
+    Name = "Enable Feature",
     Default = false,
     Callback = function(state)
         print("Feature enabled:", state)
     end
 })
 
-MainSection:Slider({
-    Text = "Power Level",
-    Minimum = 0,
-    Maximum = 100,
+MainTab:Slider({
+    Name = "Power Level",
+    Min = 0,
+    Max = 100,
     Default = 50,
-    Flag = "PowerLevel",
     Callback = function(value)
         print("Power Level:", value)
     end
 })
 
-MainSection:ColorPicker({
-    Text = "Select Color",
+MainTab:Colorpicker({
+    Name = "Select Color",
     Default = Color3.fromRGB(255, 255, 255),
     Callback = function(color)
         print("Color chosen:", color)
     end
 })
 
---// Settings Section
-SettingsSection:Toggle({
-    Text = "Show Notifications",
+-- Settings Tab Features
+SettingsTab:Toggle({
+    Name = "Show Notifications",
     Default = true,
     Callback = function(state)
         print("Notifications enabled:", state)
     end
 })
 
-SettingsSection:Dropdown({
-    Text = "Mode",
-    List = {"Easy", "Medium", "Hard"},
-    Flag = "ModeSelect",
+SettingsTab:Dropdown({
+    Name = "Mode",
+    Options = {"Easy", "Medium", "Hard"},
     Callback = function(selection)
         print("Mode selected:", selection)
     end
 })
 
-SettingsSection:Input({
-    Text = "Set Name",
+SettingsTab:Input({
+    Name = "Set Name",
     Placeholder = "Enter name here",
-    Flag = "PlayerName",
     Callback = function(text)
         print("Name set to:", text)
     end
 })
 
---// Label Example
-local infoLabel = SettingsSection:Label({
+-- Label Example
+SettingsTab:Label({
     Text = "Created by YourName",
-    Color = Color3.fromRGB(150, 200, 255),
-    Tooltip = "Credits"
+    Color = Color3.fromRGB(150, 200, 255)
 })
 
---// Default tab selected
+-- Optional: select default tab
 MainTab:Select()
