@@ -1,13 +1,21 @@
 -- Remove old GUI if exists
-if game.CoreGui:FindFirstChild("KaLiHub") then
-    game.CoreGui.KaLiHub:Destroy()
+if game:GetService("CoreGui"):FindFirstChild("KaLiHub") then
+    game:GetService("CoreGui").KaLiHub:Destroy()
 end
 
 -- ScreenGui
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "KaLiHub"
-ScreenGui.Parent = game.CoreGui
 ScreenGui.ResetOnSpawn = false
+
+-- Different executors have different CoreGui behavior
+local success, err = pcall(function()
+    ScreenGui.Parent = game:GetService("CoreGui")
+end)
+if not success then
+    -- fallback to PlayerGui if CoreGui fails
+    ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+end
 
 -- Main Window
 local Window = Instance.new("Frame")
@@ -17,7 +25,7 @@ Window.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
 Window.BorderSizePixel = 0
 Window.Parent = ScreenGui
 
--- Title Bar
+-- Title
 local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, 0, 0, 30)
 Title.Position = UDim2.new(0, 0, 0, 0)
@@ -44,7 +52,7 @@ ContentFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
 ContentFrame.BorderSizePixel = 0
 ContentFrame.Parent = Window
 
--- Helper functions
+-- Helper to create tabs
 local function createTab(name)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(1, 0, 0, 50)
@@ -58,6 +66,7 @@ local function createTab(name)
     return btn
 end
 
+-- Helper to create sections
 local function createSection(parent, text)
     local lbl = Instance.new("TextLabel")
     lbl.Size = UDim2.new(1, -20, 0, 25)
@@ -72,6 +81,7 @@ local function createSection(parent, text)
     return lbl
 end
 
+-- Helper to create buttons
 local function createButton(parent, text, callback)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(1, -20, 0, 30)
@@ -86,6 +96,7 @@ local function createButton(parent, text, callback)
     return btn
 end
 
+-- Helper to create toggles
 local function createToggle(parent, text, default, callback)
     local frame = Instance.new("Frame")
     frame.Size = UDim2.new(1, -20, 0, 30)
@@ -119,7 +130,7 @@ local function createToggle(parent, text, default, callback)
 end
 
 -- ===============================
--- Create Tabs and Content
+-- Tabs & Content
 -- ===============================
 
 -- Main Tab
@@ -160,7 +171,7 @@ createSection(settingsPage, "Options")
 createToggle(settingsPage, "Show Notifications", true, function(state) print("Notifications:", state) end)
 createButton(settingsPage, "Set Name", function() print("Name set!") end)
 
--- Credits Label
+-- Credits
 local credits = Instance.new("TextLabel")
 credits.Size = UDim2.new(1, -20, 0, 25)
 credits.Position = UDim2.new(0, 10, 1, -30)
