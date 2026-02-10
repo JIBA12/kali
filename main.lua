@@ -1,7 +1,12 @@
--- KaLi Hub using Hattori V4 UI Library
+-- Wait for the game to load
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
+
+-- Load Hattori V4 UI library
 local Hattori = loadstring(game:HttpGet("https://raw.githubusercontent.com/GhostDuckyy/Ui-Librarys/main/Hattori/V4/source.lua"))()
 
--- Create UI
+-- Create the main window
 local Window = Hattori:Window({
     Name = "KaLi Hub",
     Size = UDim2.new(0, 500, 0, 400),
