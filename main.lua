@@ -1,4 +1,4 @@
---// KaLi Hub - Mercury UI FULL CONVERT
+--// KaLi Hub - Mercury UI FULL FIX
 
 -- Wait for PlayerGui
 local Players = game:GetService("Players")
@@ -16,114 +16,150 @@ local Window = Mercury:Create{
     IntroText = "KaLi Hub Loaded"
 }
 
--- Create Tabs
+--===========================--
+-- TABS
+--===========================--
 local MainTab = Window:Tab{ Name = "Main" }
 local SettingsTab = Window:Tab{ Name = "Settings" }
 local AboutTab = Window:Tab{ Name = "About" }
 
 --===========================--
---// MAIN TAB SECTION
+-- MAIN TAB
 --===========================--
 local MainSection = MainTab:Section{ Name = "Main Features" }
 
--- Button
 MainSection:Button{
     Name = "Do Action",
-    Callback = function()
-        print("Main action executed!")
-    end
+    Callback = function() print("Main action executed!") end
 }
 
--- Toggle
 MainSection:Toggle{
     Name = "Enable Feature",
     Default = false,
-    Callback = function(state)
-        print("Feature enabled:", state)
-    end
+    Callback = function(state) print("Feature enabled:", state) end
 }
 
--- Slider
 MainSection:Slider{
     Name = "Power Level",
     Default = 50,
     Min = 0,
     Max = 100,
-    Callback = function(value)
-        print("Power Level:", value)
-    end
+    Callback = function(value) print("Power Level:", value) end
 }
 
--- Dropdown
 MainSection:Dropdown{
     Name = "Target Part",
     Default = "Head",
     Options = {"Head", "Torso", "Random"},
-    Callback = function(option)
-        print("Target part:", option)
-    end
+    Callback = function(option) print("Target part:", option) end
 }
 
--- Input Box
 MainSection:Input{
     Name = "Walkspeed",
     Placeholder = "Enter walkspeed",
-    Callback = function(text)
-        print("Walkspeed set to:", text)
-    end
+    Callback = function(text) print("Walkspeed set to:", text) end
 }
 
 --===========================--
---// SETTINGS TAB SECTION
+-- SETTINGS TAB
 --===========================--
 local SettingsSection = SettingsTab:Section{ Name = "Settings Options" }
 
--- Show Notifications Toggle
 SettingsSection:Toggle{
     Name = "Show Notifications",
     Default = true,
-    Callback = function(state)
-        print("Notifications enabled:", state)
-    end
+    Callback = function(state) print("Notifications enabled:", state) end
 }
 
--- Mode Dropdown
 SettingsSection:Dropdown{
     Name = "Mode",
     Default = "Easy",
     Options = {"Easy", "Medium", "Hard"},
-    Callback = function(selection)
-        print("Mode selected:", selection)
-    end
+    Callback = function(selection) print("Mode selected:", selection) end
 }
 
--- Name Input
 SettingsSection:Input{
     Name = "Set Name",
     Placeholder = "Enter your name",
-    Callback = function(text)
-        print("Name set to:", text)
+    Callback = function(text) print("Name set to:", text) end
+}
+
+--===========================--
+-- ABOUT TAB
+--===========================--
+local AboutSection = AboutTab:Section{ Name = "Information" }
+
+AboutSection:Label{ Text = "KaLi Hub", Color = Color3.fromRGB(255,255,255) }
+AboutSection:Label{ Text = "Version: 1.0", Color = Color3.fromRGB(180,180,180) }
+AboutSection:Label{ Text = "Created by YourName", Color = Color3.fromRGB(150,200,255) }
+
+--===========================--
+-- THEME SWITCHER (Dark / Light)
+--===========================--
+SettingsSection:Dropdown{
+    Name = "Theme",
+    Default = "Dark",
+    Options = {"Dark", "Light"},
+    Callback = function(option)
+        if option == "Dark" then
+            Mercury:SetTheme("Dark")
+        else
+            Mercury:SetTheme("Light")
+        end
+        print("Theme changed to:", option)
     end
 }
 
 --===========================--
---// ABOUT TAB SECTION
+-- OPTIONAL: Floating Icon (Draggable Show/Hide)
 --===========================--
-local AboutSection = AboutTab:Section{ Name = "Information" }
+local UIS = game:GetService("UserInputService")
+local PlayerGui = Player:WaitForChild("PlayerGui")
 
-AboutSection:Label{
-    Text = "KaLi Hub",
-    Color = Color3.fromRGB(255, 255, 255)
-}
+local IconGui = Instance.new("ScreenGui", PlayerGui)
+IconGui.Name = "KaLiHubIcon"
 
-AboutSection:Label{
-    Text = "Version: 1.0",
-    Color = Color3.fromRGB(180, 180, 180)
-}
+local Icon = Instance.new("ImageButton")
+Icon.Size = UDim2.fromOffset(50,50)
+Icon.Position = UDim2.fromScale(0.95,0.05)
+Icon.BackgroundTransparency = 1
+Icon.Image = "rbxassetid://6034818375" -- your icon asset
+Icon.Parent = IconGui
 
-AboutSection:Label{
-    Text = "Created by YourName",
-    Color = Color3.fromRGB(150, 200, 255)
-}
+local dragging, dragInput, dragStart, startPos
 
--- Mercury automatically handles drag and theme
+Icon.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = Icon.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+Icon.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - dragStart
+        Icon.Position = UDim2.new(
+            startPos.X.Scale,
+            startPos.X.Offset + delta.X,
+            startPos.Y.Scale,
+            startPos.Y.Offset + delta.Y
+        )
+    end
+end)
+
+Icon.MouseButton1Click:Connect(function()
+    Window:SetVisibility(not Window.Visible)
+end)
