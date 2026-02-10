@@ -1,40 +1,58 @@
---// Enhanced & Styled GUI
+--// KaLi Hub v2 - Modern GUI Design
 local Library = loadstring(game:HttpGet(
     "https://raw.githubusercontent.com/Rain-Design/Libraries/main/Shaman/Library.lua"
 ))()
 
 local Flags = Library.Flags
 
---// Window with design
+--// Window
 local Window = Library:Window({
     Text = "KaLi Hub",
-    Color = Color3.fromRGB(25, 25, 35),       -- Dark background
-    Accent = Color3.fromRGB(0, 200, 255),     -- Highlight / buttons
+    Color = Color3.fromRGB(20, 20, 25),       -- Dark background
+    Accent = Color3.fromRGB(0, 170, 255),     -- Highlight color
     Rounded = true,                            -- Rounded corners
-    Draggable = true                           -- Drag window
+    Draggable = true,                          -- Dragable
+    Transparency = 0.15                        -- Slight transparency
 })
 
---// Tabs with styling
-local MainTab = Window:Tab({ Text = "Main" })
-local SettingsTab = Window:Tab({ Text = "Settings" })
-local AboutTab = Window:Tab({ Text = "About" })
+--// Tabs with icons
+local MainTab = Window:Tab({ Text = "Main", Icon = "rbxassetid://6034818375" })
+local SettingsTab = Window:Tab({ Text = "Settings", Icon = "rbxassetid://6034818375" })
+local AboutTab = Window:Tab({ Text = "About", Icon = "rbxassetid://6034818375" })
 
---// Sections
-local MainSection = MainTab:Section({ Text = "Features" })
-local SettingsSection = SettingsTab:Section({ Text = "Options" })
-local AboutSection = AboutTab:Section({ Text = "Info", Side = "Right" })
+--// Sections with design
+local MainSection = MainTab:Section({
+    Text = "Features",
+    Side = "Left",
+    AccentColor = Color3.fromRGB(0, 200, 255)
+})
 
---// Collapsible Section
 local AdvancedSection = MainTab:Section({
     Text = "Advanced Features",
-    Collapsible = true
+    Side = "Left",
+    Collapsible = true,
+    Collapsed = true,           -- Starts collapsed
+    AccentColor = Color3.fromRGB(255, 100, 100)
 })
 
---// Main Features (Styled)
+local SettingsSection = SettingsTab:Section({
+    Text = "Options",
+    Side = "Left",
+    AccentColor = Color3.fromRGB(0, 255, 150)
+})
+
+local AboutSection = AboutTab:Section({
+    Text = "Info",
+    Side = "Right",
+    AccentColor = Color3.fromRGB(200, 200, 200)
+})
+
+--// Main Section Features
 MainSection:Button({
     Text = "Do Action",
     Tooltip = "Executes main action",
-    Color = Color3.fromRGB(0, 200, 255),
+    Color = Color3.fromRGB(0, 170, 255),
+    HoverColor = Color3.fromRGB(0, 220, 255),
     Callback = function()
         print("Main action executed!")
     end
@@ -44,6 +62,7 @@ MainSection:Toggle({
     Text = "Enable Feature",
     Default = false,
     Color = Color3.fromRGB(0, 255, 180),
+    HoverColor = Color3.fromRGB(0, 255, 220),
     Callback = function(state)
         print("Feature enabled:", state)
     end
@@ -55,7 +74,8 @@ MainSection:Slider({
     Maximum = 100,
     Default = 50,
     Flag = "PowerLevel",
-    Color = Color3.fromRGB(255, 165, 0), -- Orange slider
+    Color = Color3.fromRGB(255, 165, 0),
+    HoverColor = Color3.fromRGB(255, 200, 50),
     Callback = function(value)
         print("Power Level:", value)
     end
@@ -69,11 +89,12 @@ MainSection:ColorPicker({
     end
 })
 
---// Advanced Features
+--// Advanced Section Features
 AdvancedSection:Toggle({
     Text = "Advanced Toggle",
     Default = false,
     Color = Color3.fromRGB(255, 100, 100),
+    HoverColor = Color3.fromRGB(255, 150, 150),
     Callback = function(state)
         print("Advanced Toggle:", state)
     end
@@ -82,6 +103,7 @@ AdvancedSection:Toggle({
 AdvancedSection:Button({
     Text = "Advanced Button",
     Color = Color3.fromRGB(255, 0, 150),
+    HoverColor = Color3.fromRGB(255, 0, 220),
     Callback = function()
         print("Advanced Button pressed")
     end
@@ -92,6 +114,7 @@ SettingsSection:Toggle({
     Text = "Show Notifications",
     Default = true,
     Color = Color3.fromRGB(0, 200, 255),
+    HoverColor = Color3.fromRGB(0, 220, 255),
     Callback = function(state)
         print("Notifications enabled:", state)
     end
@@ -125,11 +148,11 @@ AboutSection:Label({
 })
 
 AboutSection:Label({
-    Text = "Version 1.0",
+    Text = "Version 2.0",
     Color = Color3.fromRGB(200, 200, 200)
 })
 
---// Keybind to toggle GUI (Styled)
+--// Keybind to toggle GUI (with smooth animation)
 Window:Keybind({
     Default = Enum.KeyCode.RightShift,
     Callback = function()
@@ -143,14 +166,12 @@ Window:Keybind({
 local HttpService = game:GetService("HttpService")
 local ConfigFlag = "KaLiHubConfig"
 
--- Save config
 local function SaveConfig()
     local data = HttpService:JSONEncode(Flags)
     writefile(ConfigFlag..".json", data)
     print("Config saved")
 end
 
--- Load config
 local function LoadConfig()
     if isfile(ConfigFlag..".json") then
         local data = readfile(ConfigFlag..".json")
@@ -164,13 +185,13 @@ local function LoadConfig()
     end
 end
 
--- Load config on start
 LoadConfig()
 
 -- Save button
 SettingsSection:Button({
     Text = "Save Config",
     Color = Color3.fromRGB(0, 255, 100),
+    HoverColor = Color3.fromRGB(0, 255, 150),
     Callback = SaveConfig
 })
 
