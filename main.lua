@@ -1,4 +1,6 @@
--- Load Shaman Library safely
+--// KaLi Hub - STABLE SHAMAN GUI (NO SECTION BUGS)
+
+-- Load library safely
 local Library
 local success, lib = pcall(function()
     return loadstring(game:HttpGet(
@@ -6,39 +8,45 @@ local success, lib = pcall(function()
     ))()
 end)
 
-if success then
-    Library = lib
-else
-    warn("Failed to load GUI library!")
+if not success or not lib then
+    warn("Failed to load Shaman Library")
     return
 end
 
+Library = lib
 local Flags = Library.Flags
 
 -- Window
-local Window = Library:Window({Text = "KaLi Hub"})
+local Window = Library:Window({
+    Text = "KaLi Hub"
+})
 
 -- Tabs
-local MainTab = Window:Tab({Text = "Main"})
-local SettingsTab = Window:Tab({Text = "Settings"})
+local MainTab = Window:Tab({ Text = "Main" })
+local SettingsTab = Window:Tab({ Text = "Settings" })
 
--- Sections (after tabs)
-local MainSection = MainTab:Section({Text = "Features"})
-local SettingsSection = SettingsTab:Section({Text = "Options"})
+-- Sections (THIS is the part that was breaking before)
+local MainSection = MainTab:Section({
+    Text = "Features"
+})
 
--- Main Section Features
+local SettingsSection = SettingsTab:Section({
+    Text = "Options"
+})
+
+-- ===== MAIN SECTION =====
 MainSection:Button({
     Text = "Do Action",
     Callback = function()
-        print("Action executed!")
+        print("Action executed")
     end
 })
 
 MainSection:Toggle({
     Text = "Enable Feature",
     Default = false,
-    Callback = function(state)
-        print("Feature enabled:", state)
+    Callback = function(v)
+        print("Feature:", v)
     end
 })
 
@@ -47,104 +55,43 @@ MainSection:Slider({
     Minimum = 0,
     Maximum = 100,
     Default = 50,
-    Flag = "PowerLevel",
-    Callback = function(value)
-        print("Power Level:", value)
+    Flag = "Power",
+    Callback = function(v)
+        print("Power:", v)
     end
 })
 
-MainSection:ColorPicker({
-    Text = "Select Color",
-    Default = Color3.fromRGB(255, 255, 255),
-    Callback = function(color)
-        print("Color chosen:", color)
-    end
-})
-
--- Settings Section Features
-SettingsSection:Toggle({
-    Text = "Show Notifications",
-    Default = true,
-    Callback = function(state)
-        print("Notifications enabled:", state)
-    end
-})
-
+-- ===== SETTINGS SECTION =====
 SettingsSection:Dropdown({
     Text = "Mode",
     List = {"Easy", "Medium", "Hard"},
-    Flag = "ModeSelect",
-    Callback = function(selection)
-        print("Mode selected:", selection)
+    Flag = "Mode",
+    Callback = function(v)
+        print("Mode:", v)
     end
 })
 
 SettingsSection:Input({
-    Text = "Set Name",
-    Placeholder = "Enter name here",
-    Flag = "PlayerName",
-    Callback = function(text)
-        print("Name set to:", text)
+    Text = "Player Name",
+    Placeholder = "Enter name",
+    Flag = "Name",
+    Callback = function(v)
+        print("Name:", v)
     end
 })
 
 SettingsSection:Label({
-    Text = "Created by YourName",
-    Color = Color3.fromRGB(150, 200, 255),
-    Tooltip = "Credits"
+    Text = "Created by KaLi Hub",
+    Color = Color3.fromRGB(120, 200, 255)
 })
 
--- Smooth Dragging
-do
-    local TweenService = game:GetService("TweenService")
-    local UserInputService = game:GetService("UserInputService")
-    local DragFrame = Window.Frame
-    local dragging, dragInput, mousePos, framePos = false
-
-    DragFrame.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
-            mousePos = input.Position
-            framePos = DragFrame.Position
-
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
-                end
-            end)
-        end
-    end)
-
-    DragFrame.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement then
-            dragInput = input
-        end
-    end)
-
-    UserInputService.InputChanged:Connect(function(input)
-        if dragging and input == dragInput then
-            local delta = input.Position - mousePos
-            local newPos = UDim2.new(
-                framePos.X.Scale,
-                framePos.X.Offset + delta.X,
-                framePos.Y.Scale,
-                framePos.Y.Offset + delta.Y
-            )
-            TweenService:Create(
-                DragFrame,
-                TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-                {Position = newPos}
-            ):Play()
-        end
-    end)
-end
-
--- Notification
+-- Notify
 Library:Notify({
     Title = "KaLi Hub",
-    Text = "GUI Loaded Successfully!",
-    Duration = 5
+    Text = "GUI Loaded Successfully",
+    Duration = 4
 })
 
--- Select default tab (after sections are added)
+-- Select tab LAST
+task.wait()
 MainTab:Select()
