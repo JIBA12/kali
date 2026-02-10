@@ -1,7 +1,19 @@
---// New GUI for Project
-local Library = loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/Rain-Design/Libraries/main/Shaman/Library.lua"
-))()
+--// KaLi Hub - Shaman GUI with Smooth Dragging
+
+-- Load Shaman Library safely
+local Library
+local success, lib = pcall(function()
+    return loadstring(game:HttpGet(
+        "https://raw.githubusercontent.com/Rain-Design/Libraries/main/Shaman/Library.lua"
+    ))()
+end)
+
+if success then
+    Library = lib
+else
+    warn("Failed to load GUI library!")
+    return
+end
 
 local Flags = Library.Flags
 
@@ -9,6 +21,54 @@ local Flags = Library.Flags
 local Window = Library:Window({
     Text = "KaLi Hub"
 })
+
+--// Smooth Dragging
+do
+    local TweenService = game:GetService("TweenService")
+    local UserInputService = game:GetService("UserInputService")
+
+    local DragFrame = Window.Frame  -- Shaman main frame
+    local dragging = false
+    local dragInput, mousePos, framePos
+
+    DragFrame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            mousePos = input.Position
+            framePos = DragFrame.Position
+
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+
+    DragFrame.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            dragInput = input
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and input == dragInput then
+            local delta = input.Position - mousePos
+            local newPos = UDim2.new(
+                framePos.X.Scale,
+                framePos.X.Offset + delta.X,
+                framePos.Y.Scale,
+                framePos.Y.Offset + delta.Y
+            )
+
+            TweenService:Create(
+                DragFrame,
+                TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                {Position = newPos}
+            ):Play()
+        end
+    end)
+end
 
 --// Tabs
 local MainTab = Window:Tab({ Text = "Main" })
@@ -86,6 +146,13 @@ local infoLabel = SettingsSection:Label({
     Text = "Created by YourName",
     Color = Color3.fromRGB(150, 200, 255),
     Tooltip = "Credits"
+})
+
+--// Notification on GUI load
+Library:Notify({
+    Title = "KaLi Hub",
+    Text = "GUI Loaded Successfully!",
+    Duration = 5
 })
 
 --// Default tab selected
