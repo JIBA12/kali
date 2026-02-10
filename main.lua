@@ -1,4 +1,4 @@
---// New GUI for Project
+--// Enhanced GUI for Project
 local Library = loadstring(game:HttpGet(
     "https://raw.githubusercontent.com/Rain-Design/Libraries/main/Shaman/Library.lua"
 ))()
@@ -7,16 +7,24 @@ local Flags = Library.Flags
 
 --// Window
 local Window = Library:Window({
-    Text = "KaLi Hub"
+    Text = "KaLi hub"
 })
 
 --// Tabs
 local MainTab = Window:Tab({ Text = "Main" })
 local SettingsTab = Window:Tab({ Text = "Settings" })
+local AboutTab = Window:Tab({ Text = "About" })
 
 --// Sections
 local MainSection = MainTab:Section({ Text = "Features" })
 local SettingsSection = SettingsTab:Section({ Text = "Options" })
+local AboutSection = AboutTab:Section({ Text = "Info", Side = "Right" })
+
+--// Collapsible Section Example
+local Collapsible = MainTab:Section({
+    Text = "Advanced Features",
+    Collapsible = true
+})
 
 --// Main Section Features
 MainSection:Button({
@@ -54,6 +62,22 @@ MainSection:ColorPicker({
     end
 })
 
+--// Collapsible Section Features
+Collapsible:Toggle({
+    Text = "Advanced Toggle",
+    Default = false,
+    Callback = function(state)
+        print("Advanced Toggle:", state)
+    end
+})
+
+Collapsible:Button({
+    Text = "Advanced Button",
+    Callback = function()
+        print("Advanced Button pressed")
+    end
+})
+
 --// Settings Section
 SettingsSection:Toggle({
     Text = "Show Notifications",
@@ -81,12 +105,60 @@ SettingsSection:Input({
     end
 })
 
---// Label Example
-local infoLabel = SettingsSection:Label({
+--// About Section
+AboutSection:Label({
     Text = "Created by YourName",
     Color = Color3.fromRGB(150, 200, 255),
     Tooltip = "Credits"
 })
 
---// Default tab selected
+AboutSection:Label({
+    Text = "Version 1.0",
+    Color = Color3.fromRGB(200, 200, 200)
+})
+
+--// Keybind to toggle GUI
+Window:Keybind({
+    Default = Enum.KeyCode.RightShift,
+    Callback = function()
+        Window:Toggle() -- shows/hides GUI
+    end,
+    Text = "Toggle GUI"
+})
+
+--// Config save/load
+local HttpService = game:GetService("HttpService")
+local ConfigFlag = "MyProjectGUIConfig"
+
+-- Save config
+local function SaveConfig()
+    local data = HttpService:JSONEncode(Flags)
+    writefile(ConfigFlag..".json", data)
+    print("Config saved")
+end
+
+-- Load config
+local function LoadConfig()
+    if isfile(ConfigFlag..".json") then
+        local data = readfile(ConfigFlag..".json")
+        local decoded = HttpService:JSONDecode(data)
+        for k,v in pairs(decoded) do
+            if Flags[k] ~= nil then
+                Flags[k] = v
+            end
+        end
+        print("Config loaded")
+    end
+end
+
+-- Load config on start
+LoadConfig()
+
+-- Example save button
+SettingsSection:Button({
+    Text = "Save Config",
+    Callback = SaveConfig
+})
+
+-- Default tab selected
 MainTab:Select()
