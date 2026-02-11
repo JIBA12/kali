@@ -1,4 +1,4 @@
---// KaLiHub V2 - Mobile Friendly Full Framework
+--// KaLiHub V2 - Modern UI (Mobile + PC)
 
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
@@ -23,28 +23,18 @@ pcall(function()
     end
 end)
 
+-- ScreenGui
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "KaLiHubV2"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = parentGui or PlayerGui
 
 -- ===============================
--- Responsive scaling for mobile
--- ===============================
-local screenX, screenY = UIS:GetScreenResolution().X, UIS:GetScreenResolution().Y
-local baseWidth, baseHeight = 400, 450
-local scaleFactor = 1
-
-if screenX <= 800 or screenY <= 600 then
-    scaleFactor = 0.7 -- 70% size on small/mobile screens
-end
-
--- ===============================
 -- Main Window
 -- ===============================
 local Main = Instance.new("Frame")
-Main.Size = UDim2.new(0, baseWidth * scaleFactor, 0, baseHeight * scaleFactor)
-Main.Position = UDim2.new(0.5, -(baseWidth * scaleFactor)/2, 0.5, -(baseHeight * scaleFactor)/2)
+Main.Size = UDim2.new(0,400,0,450)
+Main.Position = UDim2.new(0.5,-200,0.5,-225)
 Main.BackgroundColor3 = Color3.fromRGB(20,20,25)
 Main.BackgroundTransparency = 0.05
 Main.BorderSizePixel = 0
@@ -66,9 +56,8 @@ MainGradient.Color = ColorSequence.new{
 -- ===============================
 -- Header
 -- ===============================
-local headerHeight = 45 * scaleFactor
 local Header = Instance.new("Frame")
-Header.Size = UDim2.new(1,0,0, headerHeight)
+Header.Size = UDim2.new(1,0,0,45)
 Header.BackgroundTransparency = 1
 Header.Parent = Main
 
@@ -79,41 +68,39 @@ Title.BackgroundTransparency = 1
 Title.Text = "KaLiHub V2"
 Title.TextColor3 = Color3.fromRGB(200,200,255)
 Title.Font = Enum.Font.GothamBold
-Title.TextSize = 18 * scaleFactor
+Title.TextSize = 18
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = Header
 
--- Close Button
+-- Buttons
 local Close = Instance.new("TextButton")
-Close.Size = UDim2.new(0,40 * scaleFactor,0,35 * scaleFactor)
-Close.Position = UDim2.new(1,-45 * scaleFactor,0,5 * scaleFactor)
+Close.Size = UDim2.new(0,40,0,35)
+Close.Position = UDim2.new(1,-45,0,5)
 Close.BackgroundColor3 = Color3.fromRGB(200,60,60)
 Close.Text = "X"
 Close.TextColor3 = Color3.fromRGB(255,255,255)
 Close.Font = Enum.Font.GothamBold
-Close.TextSize = 18 * scaleFactor
+Close.TextSize = 18
 Close.Parent = Header
 Instance.new("UICorner", Close)
 
--- Minimize Button
 local Minimize = Instance.new("TextButton")
-Minimize.Size = UDim2.new(0,40 * scaleFactor,0,35 * scaleFactor)
-Minimize.Position = UDim2.new(1,-90 * scaleFactor,0,5 * scaleFactor)
+Minimize.Size = UDim2.new(0,40,0,35)
+Minimize.Position = UDim2.new(1,-90,0,5)
 Minimize.BackgroundColor3 = Color3.fromRGB(70,170,255)
 Minimize.Text = "-"
 Minimize.TextColor3 = Color3.fromRGB(255,255,255)
 Minimize.Font = Enum.Font.GothamBold
-Minimize.TextSize = 18 * scaleFactor
+Minimize.TextSize = 18
 Minimize.Parent = Header
 Instance.new("UICorner", Minimize)
 
 -- ===============================
 -- Sidebar
 -- ===============================
-local sidebarWidth = 120 * scaleFactor
 local Sidebar = Instance.new("Frame")
-Sidebar.Size = UDim2.new(0, sidebarWidth,1, -headerHeight)
-Sidebar.Position = UDim2.new(0,0,0,headerHeight)
+Sidebar.Size = UDim2.new(0,120,1,-45)
+Sidebar.Position = UDim2.new(0,0,0,45)
 Sidebar.BackgroundTransparency = 0.05
 Sidebar.BackgroundColor3 = Color3.fromRGB(30,30,40)
 Sidebar.BorderSizePixel = 0
@@ -121,24 +108,23 @@ Sidebar.Parent = Main
 
 local SidebarLayout = Instance.new("UIListLayout", Sidebar)
 SidebarLayout.SortOrder = Enum.SortOrder.LayoutOrder
-SidebarLayout.Padding = UDim.new(0,4 * scaleFactor)
+SidebarLayout.Padding = UDim.new(0,4)
 
 -- ===============================
 -- Content Area
 -- ===============================
 local Content = Instance.new("Frame")
-Content.Size = UDim2.new(1,-sidebarWidth,1,-headerHeight)
-Content.Position = UDim2.new(0, sidebarWidth,0, headerHeight)
+Content.Size = UDim2.new(1,-120,1,-45)
+Content.Position = UDim2.new(0,120,0,45)
 Content.BackgroundTransparency = 1
 Content.Parent = Main
 
 -- ===============================
 -- Floating Icon
 -- ===============================
-local floatSize = 60 * scaleFactor
 local Float = Instance.new("TextButton")
-Float.Size = UDim2.new(0,floatSize,0,floatSize)
-Float.Position = UDim2.new(0,20,0.5,-floatSize/2)
+Float.Size = UDim2.new(0,60,0,60)
+Float.Position = UDim2.new(0,20,0.5,-30)
 Float.BackgroundColor3 = Color3.fromRGB(70,170,255)
 Float.Text = "K"
 Float.TextColor3 = Color3.fromRGB(255,255,255)
@@ -209,7 +195,7 @@ local firstTab = true
 
 function KaLiHub:CreateTab(name)
     local TabButton = Instance.new("TextButton")
-    TabButton.Size = UDim2.new(1,0,0,40 * scaleFactor)
+    TabButton.Size = UDim2.new(1,0,0,40)
     TabButton.Text = name
     TabButton.BackgroundColor3 = Color3.fromRGB(45,45,55)
     TabButton.TextColor3 = Color3.fromRGB(255,255,255)
@@ -225,7 +211,7 @@ function KaLiHub:CreateTab(name)
     Page.Parent = Content
 
     local Layout = Instance.new("UIListLayout", Page)
-    Layout.Padding = UDim.new(0,6 * scaleFactor)
+    Layout.Padding = UDim.new(0,6)
 
     Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
         Page.CanvasSize = UDim2.new(0,0,0,Layout.AbsoluteContentSize.Y + 10)
@@ -249,19 +235,19 @@ function KaLiHub:CreateTab(name)
 
     function Tab:Section(text)
         local Label = Instance.new("TextLabel")
-        Label.Size = UDim2.new(1,-10,0,25 * scaleFactor)
+        Label.Size = UDim2.new(1,-10,0,25)
         Label.BackgroundTransparency = 1
         Label.Text = text
         Label.TextColor3 = Color3.fromRGB(100,180,255)
         Label.Font = Enum.Font.GothamBold
-        Label.TextSize = 14 * scaleFactor
+        Label.TextSize = 14
         Label.TextXAlignment = Enum.TextXAlignment.Left
         Label.Parent = Page
     end
 
     function Tab:Button(text, callback)
         local Btn = Instance.new("TextButton")
-        Btn.Size = UDim2.new(1,-10,0,35 * scaleFactor)
+        Btn.Size = UDim2.new(1,-10,0,35)
         Btn.BackgroundColor3 = Color3.fromRGB(60,60,75)
         Btn.Text = text
         Btn.TextColor3 = Color3.fromRGB(255,255,255)
@@ -276,7 +262,7 @@ function KaLiHub:CreateTab(name)
     function Tab:Toggle(text, default, callback)
         local state = default
         local Btn = Instance.new("TextButton")
-        Btn.Size = UDim2.new(1,-10,0,35 * scaleFactor)
+        Btn.Size = UDim2.new(1,-10,0,35)
         Btn.BackgroundColor3 = state and Color3.fromRGB(0,170,0) or Color3.fromRGB(170,0,0)
         Btn.Text = text
         Btn.TextColor3 = Color3.fromRGB(255,255,255)
