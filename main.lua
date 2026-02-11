@@ -182,7 +182,7 @@ pcall(function()
     end
 
     -- Pages
-    local main = createPage(Sample")
+    local main = createPage("Sample")
     main.Visible = true
 
     createButton(main, "Test Action", function()
