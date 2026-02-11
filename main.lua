@@ -1,4 +1,4 @@
--- KaLiHub V2 - Mobile-Friendly Dropdown Tabs (Fixed)
+-- KaLiHub V2 - Mobile-Friendly Dropdown Tabs (Stable Version)
 
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
@@ -29,11 +29,11 @@ ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = parentGui or PlayerGui
 
 -- ===============================
--- Main Window (smaller height)
+-- Main Window
 -- ===============================
 local Main = Instance.new("Frame")
 Main.Size = UDim2.new(0, 300, 0, 250) -- reduced height
-Main.Position = UDim2.new(0.5, -150, 0.5, -125) -- center
+Main.Position = UDim2.new(0.5, -150, 0.5, -125)
 Main.BackgroundColor3 = Color3.fromRGB(20,20,25)
 Main.BackgroundTransparency = 0.05
 Main.BorderSizePixel = 0
@@ -89,7 +89,7 @@ Minimize.Parent = Header
 Instance.new("UICorner", Minimize)
 
 -- ===============================
--- Dropdown Tab Button
+-- Dropdown Tabs
 -- ===============================
 local TabDropdown = Instance.new("Frame")
 TabDropdown.Size = UDim2.new(1,-20,0,35)
@@ -130,6 +130,9 @@ Instance.new("UICorner", DropdownFrame)
 local DropdownLayout = Instance.new("UIListLayout", DropdownFrame)
 DropdownLayout.SortOrder = Enum.SortOrder.LayoutOrder
 DropdownLayout.Padding = UDim.new(0,2)
+
+-- Keep track of all tab buttons
+local DropdownButtons = {}
 
 -- ===============================
 -- Content Area
@@ -189,7 +192,7 @@ Close.MouseButton1Click:Connect(function()
 end)
 
 -- ===============================
--- KaLiHub V2 Framework with Dropdown Tabs
+-- KaLiHub Framework
 -- ===============================
 local KaLiHub = {}
 local Tabs = {}
@@ -203,7 +206,7 @@ function KaLiHub:CreateTab(name)
 
     local Tab = {}
 
-    -- Add to dropdown
+    -- Create tab button
     local TabButton = Instance.new("TextButton")
     TabButton.Size = UDim2.new(1,0,0,25)
     TabButton.BackgroundTransparency = 1
@@ -213,18 +216,22 @@ function KaLiHub:CreateTab(name)
     TabButton.TextSize = 14
     TabButton.Parent = DropdownFrame
 
+    -- Add to tracking table
+    table.insert(DropdownButtons, TabButton)
+
+    -- Button click
     TabButton.MouseButton1Click:Connect(function()
-        -- hide all tabs
         for _,v in pairs(Tabs) do
             v.Visible = false
         end
         TabFrame.Visible = true
         SelectedTab.Text = name
-        DropdownFrame.Size = UDim2.new(1,0,0,0) -- collapse
+        DropdownFrame.Size = UDim2.new(1,0,0,0) -- collapse dropdown
     end)
 
     Tabs[name] = TabFrame
 
+    -- Section
     function Tab:Section(text)
         local Label = Instance.new("TextLabel")
         Label.Size = UDim2.new(1,0,0,20)
@@ -237,6 +244,7 @@ function KaLiHub:CreateTab(name)
         Label.Parent = TabFrame
     end
 
+    -- Button
     function Tab:Button(text, callback)
         local Btn = Instance.new("TextButton")
         Btn.Size = UDim2.new(1,0,0,25)
@@ -251,6 +259,7 @@ function KaLiHub:CreateTab(name)
         end)
     end
 
+    -- Toggle
     function Tab:Toggle(text, default, callback)
         local state = default
         local Btn = Instance.new("TextButton")
@@ -273,21 +282,11 @@ function KaLiHub:CreateTab(name)
     return Tab
 end
 
--- ===============================
--- Dropdown Toggle
--- ===============================
+-- Dropdown toggle
 TabDropdown.MouseButton1Click:Connect(function()
-    local tabCount = #DropdownFrame:GetChildren()
-    -- exclude non-button children
-    local buttonCount = 0
-    for _,child in pairs(DropdownFrame:GetChildren()) do
-        if child:IsA("TextButton") then
-            buttonCount = buttonCount + 1
-        end
-    end
-
+    if #DropdownButtons == 0 then return end
     if DropdownFrame.Size.Y.Offset == 0 then
-        DropdownFrame.Size = UDim2.new(1,0,0, buttonCount * 27)
+        DropdownFrame.Size = UDim2.new(1,0,0, #DropdownButtons * 27)
     else
         DropdownFrame.Size = UDim2.new(1,0,0,0)
     end
