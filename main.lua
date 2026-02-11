@@ -57,7 +57,7 @@ Title.Parent = Header
 local Close = Instance.new("TextButton")
 Close.Size = UDim2.new(0,30,0,25)
 Close.Position = UDim2.new(1,-35,0,5)
-Close.BackgroundColor3 = Color3.fromRGB(200,60,60)
+Close.BackgroundColor3 = Color3.fromRGB(0,0,0)
 Close.Text = "X"
 Close.TextColor3 = Color3.fromRGB(255,255,255)
 Close.Font = Enum.Font.GothamBold
@@ -68,7 +68,7 @@ Instance.new("UICorner", Close)
 local Minimize = Instance.new("TextButton")
 Minimize.Size = UDim2.new(0,30,0,25)
 Minimize.Position = UDim2.new(1,-70,0,5)
-Minimize.BackgroundColor3 = Color3.fromRGB(70,170,255)
+Minimize.BackgroundColor3 = Color3.fromRGB(0,0,0)
 Minimize.Text = "-"
 Minimize.TextColor3 = Color3.fromRGB(255,255,255)
 Minimize.Font = Enum.Font.GothamBold
