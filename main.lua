@@ -1,4 +1,4 @@
--- KaLiHub V2 - Mobile-Friendly Scrollable Tabs (Corner-Fit Version)
+-- KaLiHub V2 - Mobile-Friendly Scrollable Tabs (Floating Button Memory Fix)
 
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
@@ -35,7 +35,7 @@ local HEADER_HEIGHT = 40
 local SIDEBAR_WIDTH = 100
 
 local Main = Instance.new("Frame")
-Main.Size = UDim2.new(0, 400, 0, 300) -- main GUI
+Main.Size = UDim2.new(0, 400, 0, 300)
 Main.Position = UDim2.new(0.5, -200, 0.5, -150)
 Main.BackgroundColor3 = Color3.fromRGB(20,20,25)
 Main.BackgroundTransparency = 0.05
@@ -119,13 +119,12 @@ ContentLayout.SortOrder = Enum.SortOrder.LayoutOrder
 ContentLayout.Padding = UDim.new(0,5)
 ContentLayout.Parent = ContentScroll
 
--- Resize canvas automatically
 ContentLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
     ContentScroll.CanvasSize = UDim2.new(0,0,0,ContentLayout.AbsoluteContentSize.Y + 10)
 end)
 
 -- ===============================
--- Drag Function (PC + Mobile)
+-- Drag Function
 -- ===============================
 local function Drag(frame)
     local dragging = false
@@ -161,16 +160,18 @@ end
 Drag(Main)
 
 -- ===============================
--- Minimize / Close
+-- Minimize / Close (Floating Button Memory Fix)
 -- ===============================
 local FloatingButton
+local lastFloatingPosition = UDim2.new(0.5,-20,0.5,-20)
+
 Minimize.MouseButton1Click:Connect(function()
     Main.Visible = false
 
     if not FloatingButton then
         FloatingButton = Instance.new("TextButton")
         FloatingButton.Size = UDim2.new(0,40,0,40)
-        FloatingButton.Position = UDim2.new(0.5,-20,0.5,-20)
+        FloatingButton.Position = lastFloatingPosition
         FloatingButton.BackgroundColor3 = Color3.fromRGB(70,170,255)
         FloatingButton.Text = "K"
         FloatingButton.TextColor3 = Color3.fromRGB(255,255,255)
@@ -179,10 +180,41 @@ Minimize.MouseButton1Click:Connect(function()
         FloatingButton.Parent = ScreenGui
         Instance.new("UICorner", FloatingButton)
 
-        Drag(FloatingButton)
+        -- Drag FloatingButton
+        local dragging = false
+        local dragStart, startPos
+
+        FloatingButton.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or
+               input.UserInputType == Enum.UserInputType.Touch then
+                dragging = true
+                dragStart = input.Position
+                startPos = FloatingButton.Position
+
+                input.Changed:Connect(function()
+                    if input.UserInputState == Enum.UserInputState.End then
+                        dragging = false
+                        lastFloatingPosition = FloatingButton.Position -- remember position
+                    end
+                end)
+            end
+        end)
+
+        UIS.InputChanged:Connect(function(input)
+            if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+                local delta = input.Position - dragStart
+                FloatingButton.Position = UDim2.new(
+                    startPos.X.Scale,
+                    startPos.X.Offset + delta.X,
+                    startPos.Y.Scale,
+                    startPos.Y.Offset + delta.Y
+                )
+            end
+        end)
 
         FloatingButton.MouseButton1Click:Connect(function()
             Main.Visible = true
+            lastFloatingPosition = FloatingButton.Position
             FloatingButton:Destroy()
             FloatingButton = nil
         end)
@@ -200,7 +232,6 @@ local KaLiHub = {}
 local Tabs = {}
 
 function KaLiHub:CreateTab(name)
-    -- Tab content frame inside right scrollable area
     local TabFrame = Instance.new("Frame")
     TabFrame.Size = UDim2.new(1,0,0,0)
     TabFrame.BackgroundTransparency = 1
@@ -212,7 +243,6 @@ function KaLiHub:CreateTab(name)
     TabLayout.Padding = UDim.new(0,5)
     TabLayout.Parent = TabFrame
 
-    -- Left sidebar button
     local TabButton = Instance.new("TextButton")
     TabButton.Size = UDim2.new(1,0,0,40)
     TabButton.Text = name
@@ -236,7 +266,6 @@ function KaLiHub:CreateTab(name)
 
     local Tab = {}
 
-    -- Section
     function Tab:Section(text)
         local SectionLabel = Instance.new("TextLabel")
         SectionLabel.Size = UDim2.new(1,0,0,20)
@@ -255,7 +284,6 @@ function KaLiHub:CreateTab(name)
         Divider.Parent = TabFrame
     end
 
-    -- Button
     function Tab:Button(text, callback)
         local Btn = Instance.new("TextButton")
         Btn.Size = UDim2.new(1,0,0,25)
@@ -272,7 +300,6 @@ function KaLiHub:CreateTab(name)
         end)
     end
 
-    -- Toggle
     function Tab:Toggle(text, default, callback)
         local state = default
         local Btn = Instance.new("TextButton")
