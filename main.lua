@@ -1,4 +1,4 @@
--- KaLiHub V2 - Mobile-Friendly Dropdown Tabs
+-- KaLiHub V2 - Mobile-Friendly Dropdown Tabs (Fixed)
 
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
@@ -135,7 +135,7 @@ DropdownLayout.Padding = UDim.new(0,2)
 -- Content Area
 -- ===============================
 local Content = Instance.new("Frame")
-Content.Size = UDim2.new(1,-20,1, -90)
+Content.Size = UDim2.new(1,-20,1,-90)
 Content.Position = UDim2.new(0,10,0,85)
 Content.BackgroundTransparency = 1
 Content.Parent = Main
@@ -193,7 +193,6 @@ end)
 -- ===============================
 local KaLiHub = {}
 local Tabs = {}
-local SelectedTabName = nil
 
 function KaLiHub:CreateTab(name)
     local TabFrame = Instance.new("Frame")
@@ -209,4 +208,110 @@ function KaLiHub:CreateTab(name)
     TabButton.Size = UDim2.new(1,0,0,25)
     TabButton.BackgroundTransparency = 1
     TabButton.Text = name
-    TabButton.TextColor3 = Color3.fromRGB(2
+    TabButton.TextColor3 = Color3.fromRGB(255,255,255)
+    TabButton.Font = Enum.Font.GothamBold
+    TabButton.TextSize = 14
+    TabButton.Parent = DropdownFrame
+
+    TabButton.MouseButton1Click:Connect(function()
+        -- hide all tabs
+        for _,v in pairs(Tabs) do
+            v.Visible = false
+        end
+        TabFrame.Visible = true
+        SelectedTab.Text = name
+        DropdownFrame.Size = UDim2.new(1,0,0,0) -- collapse
+    end)
+
+    Tabs[name] = TabFrame
+
+    function Tab:Section(text)
+        local Label = Instance.new("TextLabel")
+        Label.Size = UDim2.new(1,0,0,20)
+        Label.BackgroundTransparency = 1
+        Label.Text = text
+        Label.TextColor3 = Color3.fromRGB(100,180,255)
+        Label.Font = Enum.Font.GothamBold
+        Label.TextSize = 13
+        Label.TextXAlignment = Enum.TextXAlignment.Left
+        Label.Parent = TabFrame
+    end
+
+    function Tab:Button(text, callback)
+        local Btn = Instance.new("TextButton")
+        Btn.Size = UDim2.new(1,0,0,25)
+        Btn.BackgroundColor3 = Color3.fromRGB(60,60,75)
+        Btn.Text = text
+        Btn.TextColor3 = Color3.fromRGB(255,255,255)
+        Btn.Parent = TabFrame
+        Instance.new("UICorner", Btn)
+
+        Btn.MouseButton1Click:Connect(function()
+            pcall(callback)
+        end)
+    end
+
+    function Tab:Toggle(text, default, callback)
+        local state = default
+        local Btn = Instance.new("TextButton")
+        Btn.Size = UDim2.new(1,0,0,25)
+        Btn.BackgroundColor3 = state and Color3.fromRGB(0,170,0) or Color3.fromRGB(170,0,0)
+        Btn.Text = text
+        Btn.TextColor3 = Color3.fromRGB(255,255,255)
+        Btn.Parent = TabFrame
+        Instance.new("UICorner", Btn)
+
+        Btn.MouseButton1Click:Connect(function()
+            state = not state
+            Btn.BackgroundColor3 = state and Color3.fromRGB(0,170,0) or Color3.fromRGB(170,0,0)
+            pcall(function()
+                callback(state)
+            end)
+        end)
+    end
+
+    return Tab
+end
+
+-- ===============================
+-- Dropdown Toggle
+-- ===============================
+TabDropdown.MouseButton1Click:Connect(function()
+    local tabCount = #DropdownFrame:GetChildren()
+    -- exclude non-button children
+    local buttonCount = 0
+    for _,child in pairs(DropdownFrame:GetChildren()) do
+        if child:IsA("TextButton") then
+            buttonCount = buttonCount + 1
+        end
+    end
+
+    if DropdownFrame.Size.Y.Offset == 0 then
+        DropdownFrame.Size = UDim2.new(1,0,0, buttonCount * 27)
+    else
+        DropdownFrame.Size = UDim2.new(1,0,0,0)
+    end
+end)
+
+-- ===============================
+-- Example Usage
+-- ===============================
+local MainTab = KaLiHub:CreateTab("Main")
+MainTab:Section("Features")
+MainTab:Button("Test Button", function()
+    print("Clicked!")
+end)
+MainTab:Toggle("Auto Farm", false, function(v)
+    print("Toggle:",v)
+end)
+
+local PlayerTab = KaLiHub:CreateTab("Player")
+PlayerTab:Section("Player Options")
+PlayerTab:Button("Speed Boost", function()
+    local char = Player.Character
+    if char and char:FindFirstChildOfClass("Humanoid") then
+        char.Humanoid.WalkSpeed = 50
+    end
+end)
+
+return KaLiHub
