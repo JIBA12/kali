@@ -1,4 +1,4 @@
--- KaLiHub V2 - Mobile-Friendly Scrollable Tabs
+-- KaLiHub V2 - Mobile-Friendly Scrollable Tabs (Corner-Fit Version)
 
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
@@ -31,8 +31,11 @@ ScreenGui.Parent = parentGui or PlayerGui
 -- ===============================
 -- Main Window
 -- ===============================
+local HEADER_HEIGHT = 40
+local SIDEBAR_WIDTH = 100
+
 local Main = Instance.new("Frame")
-Main.Size = UDim2.new(0, 400, 0, 300) -- wider for sidebar
+Main.Size = UDim2.new(0, 400, 0, 300) -- main GUI
 Main.Position = UDim2.new(0.5, -200, 0.5, -150)
 Main.BackgroundColor3 = Color3.fromRGB(20,20,25)
 Main.BackgroundTransparency = 0.05
@@ -47,7 +50,7 @@ MainStroke.Thickness = 1
 -- Header
 -- ===============================
 local Header = Instance.new("Frame")
-Header.Size = UDim2.new(1,0,0,40)
+Header.Size = UDim2.new(1,0,0,HEADER_HEIGHT)
 Header.BackgroundTransparency = 1
 Header.Parent = Main
 
@@ -90,8 +93,8 @@ Instance.new("UICorner", Minimize)
 -- Left Scrollable Tab Sidebar
 -- ===============================
 local TabsSidebar = Instance.new("ScrollingFrame")
-TabsSidebar.Size = UDim2.new(0,100,1,-40)
-TabsSidebar.Position = UDim2.new(0,0,0,40)
+TabsSidebar.Size = UDim2.new(0,SIDEBAR_WIDTH,1,-HEADER_HEIGHT)
+TabsSidebar.Position = UDim2.new(0,0,0,HEADER_HEIGHT)
 TabsSidebar.BackgroundColor3 = Color3.fromRGB(30,30,35)
 TabsSidebar.ScrollBarThickness = 6
 TabsSidebar.Parent = Main
@@ -105,8 +108,8 @@ TabsLayout.Parent = TabsSidebar
 -- Right Scrollable Content Area
 -- ===============================
 local ContentScroll = Instance.new("ScrollingFrame")
-ContentScroll.Size = UDim2.new(1,-110,1,-40)
-ContentScroll.Position = UDim2.new(0,105,0,40)
+ContentScroll.Size = UDim2.new(1,-SIDEBAR_WIDTH,1,-HEADER_HEIGHT)
+ContentScroll.Position = UDim2.new(0,SIDEBAR_WIDTH,0,HEADER_HEIGHT)
 ContentScroll.BackgroundTransparency = 1
 ContentScroll.ScrollBarThickness = 6
 ContentScroll.Parent = Main
