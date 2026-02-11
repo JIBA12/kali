@@ -1,5 +1,4 @@
 -- KaLiHub V2 Minimal GUI (Smaller, Draggable + Floating Icon + Header Line)
-
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
@@ -14,22 +13,20 @@ pcall(function()
     end
 end)
 
--- Parent safely
 local parentGui = CoreGui or PlayerGui
-
--- ===============================
--- Main GUI Frame (Smaller)
--- ===============================
 local HEADER_HEIGHT = 35
 
+-- ===============================
+-- ScreenGui + Main Frame
+-- ===============================
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "KaLiHubV2"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = parentGui
 
 local Main = Instance.new("Frame")
-Main.Size = UDim2.new(0,350,0,220) -- smaller width and height
-Main.Position = UDim2.new(0.5,-175,0.5,-110) -- center the smaller frame
+Main.Size = UDim2.new(0, 350, 0, 220)
+Main.Position = UDim2.new(0.5, -175, 0.5, -110)
 Main.BackgroundColor3 = Color3.fromRGB(20,20,25)
 Main.BorderSizePixel = 0
 Main.Parent = ScreenGui
@@ -39,7 +36,7 @@ MainStroke.Color = Color3.fromRGB(80,160,255)
 MainStroke.Thickness = 1
 
 -- ===============================
--- Header
+-- Header + Title + Buttons
 -- ===============================
 local Header = Instance.new("Frame")
 Header.Size = UDim2.new(1,0,0,HEADER_HEIGHT)
@@ -83,16 +80,16 @@ Instance.new("UICorner", Minimize)
 -- Header Line
 -- ===============================
 local HeaderLine = Instance.new("Frame")
-HeaderLine.Size = UDim2.new(1,0,0,1) -- 1px height
+HeaderLine.Size = UDim2.new(1,0,0,1)
 HeaderLine.Position = UDim2.new(0,0,0,HEADER_HEIGHT-1)
 HeaderLine.BackgroundColor3 = Color3.fromRGB(80,160,255)
 HeaderLine.BorderSizePixel = 0
 HeaderLine.Parent = Main
 
 -- ===============================
--- Drag Function
+-- Drag Function (Reusable)
 -- ===============================
-local function Drag(frame)
+local function makeDraggable(frame)
     local dragging = false
     local dragStart, startPos
 
@@ -123,7 +120,8 @@ local function Drag(frame)
         end
     end)
 end
-Drag(Main)
+
+makeDraggable(Main)
 
 -- ===============================
 -- Minimize / Close
@@ -133,58 +131,27 @@ local lastPos = UDim2.new(0.5,-20,0.5,-20)
 
 Minimize.MouseButton1Click:Connect(function()
     Main.Visible = false
+    if FloatingButton then return end
 
-    if not FloatingButton then
-        FloatingButton = Instance.new("TextButton")
-        FloatingButton.Size = UDim2.new(0,35,0,35) -- smaller floating icon
-        FloatingButton.Position = lastPos
-        FloatingButton.BackgroundColor3 = Color3.fromRGB(70,170,255)
-        FloatingButton.Text = "K"
-        FloatingButton.TextColor3 = Color3.fromRGB(255,255,255)
-        FloatingButton.Font = Enum.Font.GothamBold
-        FloatingButton.TextSize = 16
-        FloatingButton.Parent = ScreenGui
-        Instance.new("UICorner", FloatingButton)
+    FloatingButton = Instance.new("TextButton")
+    FloatingButton.Size = UDim2.new(0,35,0,35)
+    FloatingButton.Position = lastPos
+    FloatingButton.BackgroundColor3 = Color3.fromRGB(70,170,255)
+    FloatingButton.Text = "K"
+    FloatingButton.TextColor3 = Color3.fromRGB(255,255,255)
+    FloatingButton.Font = Enum.Font.GothamBold
+    FloatingButton.TextSize = 16
+    FloatingButton.Parent = ScreenGui
+    Instance.new("UICorner", FloatingButton)
 
-        -- Drag Floating Button
-        local dragging = false
-        local dragStart, startPos
+    makeDraggable(FloatingButton)
 
-        FloatingButton.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 or
-               input.UserInputType == Enum.UserInputType.Touch then
-                dragging = true
-                dragStart = input.Position
-                startPos = FloatingButton.Position
-
-                input.Changed:Connect(function()
-                    if input.UserInputState == Enum.UserInputState.End then
-                        dragging = false
-                        lastPos = FloatingButton.Position
-                    end
-                end)
-            end
-        end)
-
-        UIS.InputChanged:Connect(function(input)
-            if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-                local delta = input.Position - dragStart
-                FloatingButton.Position = UDim2.new(
-                    startPos.X.Scale,
-                    startPos.X.Offset + delta.X,
-                    startPos.Y.Scale,
-                    startPos.Y.Offset + delta.Y
-                )
-            end
-        end)
-
-        FloatingButton.MouseButton1Click:Connect(function()
-            Main.Visible = true
-            lastPos = FloatingButton.Position
-            FloatingButton:Destroy()
-            FloatingButton = nil
-        end)
-    end
+    FloatingButton.MouseButton1Click:Connect(function()
+        Main.Visible = true
+        lastPos = FloatingButton.Position
+        FloatingButton:Destroy()
+        FloatingButton = nil
+    end)
 end)
 
 Close.MouseButton1Click:Connect(function()
