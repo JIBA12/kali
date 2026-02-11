@@ -1,4 +1,4 @@
--- KaLiHub Compact Mobile Version
+-- KaLiHub Mobile Compact + Minimize + Close
 pcall(function()
     local Players = game:GetService("Players")
     local UserInputService = game:GetService("UserInputService")
@@ -26,19 +26,22 @@ pcall(function()
     pcall(function() gui.Parent = CoreGui end)
     if not gui.Parent then gui.Parent = playerGui end
 
-    -- Main Window (SMALLER)
+    ------------------------------------------------------------------
+    -- Main Window
+    ------------------------------------------------------------------
     local window = Instance.new("Frame")
-    window.Size = UDim2.new(0, 320, 0, 260) -- smaller size
+    window.Size = UDim2.new(0, 320, 0, 260)
     window.AnchorPoint = Vector2.new(0.5, 0.5)
-    window.Position = UDim2.new(0.5, 0, 0.5, 0) -- auto center
+    window.Position = UDim2.new(0.5, 0, 0.5, 0)
     window.BackgroundColor3 = Color3.fromRGB(25,25,30)
     window.BorderSizePixel = 0
-    window.Parent = gui
     window.Active = true
-
+    window.Parent = gui
     Instance.new("UICorner", window).CornerRadius = UDim.new(0,8)
 
-    -- Top Bar (drag area)
+    ------------------------------------------------------------------
+    -- Top Bar
+    ------------------------------------------------------------------
     local top = Instance.new("Frame")
     top.Size = UDim2.new(1,0,0,35)
     top.BackgroundColor3 = Color3.fromRGB(18,18,22)
@@ -47,134 +50,124 @@ pcall(function()
     Instance.new("UICorner", top).CornerRadius = UDim.new(0,8)
 
     local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(1,0,1,0)
+    title.Size = UDim2.new(1,-70,1,0)
+    title.Position = UDim2.new(0,10,0,0)
     title.BackgroundTransparency = 1
     title.Text = "KaLi Hub"
     title.Font = Enum.Font.GothamBold
     title.TextSize = 14
     title.TextColor3 = Color3.fromRGB(0,170,255)
+    title.TextXAlignment = Enum.TextXAlignment.Left
     title.Parent = top
 
-    -- Sidebar (smaller)
-    local sidebar = Instance.new("Frame")
-    sidebar.Size = UDim2.new(0,90,1,-35)
-    sidebar.Position = UDim2.new(0,0,0,35)
-    sidebar.BackgroundColor3 = Color3.fromRGB(35,35,45)
-    sidebar.BorderSizePixel = 0
-    sidebar.Parent = window
+    -- Minimize Button
+    local minimize = Instance.new("TextButton")
+    minimize.Size = UDim2.new(0,30,0,30)
+    minimize.Position = UDim2.new(1,-65,0,2)
+    minimize.Text = "-"
+    minimize.Font = Enum.Font.GothamBold
+    minimize.TextSize = 16
+    minimize.BackgroundColor3 = Color3.fromRGB(50,50,60)
+    minimize.TextColor3 = Color3.new(1,1,1)
+    minimize.Parent = top
+    Instance.new("UICorner", minimize).CornerRadius = UDim.new(0,6)
 
-    local tabLayout = Instance.new("UIListLayout")
-    tabLayout.Padding = UDim.new(0,4)
-    tabLayout.Parent = sidebar
+    -- Close Button
+    local close = Instance.new("TextButton")
+    close.Size = UDim2.new(0,30,0,30)
+    close.Position = UDim2.new(1,-32,0,2)
+    close.Text = "X"
+    close.Font = Enum.Font.GothamBold
+    close.TextSize = 14
+    close.BackgroundColor3 = Color3.fromRGB(170,60,60)
+    close.TextColor3 = Color3.new(1,1,1)
+    close.Parent = top
+    Instance.new("UICorner", close).CornerRadius = UDim.new(0,6)
 
-    -- Content
-    local content = Instance.new("Frame")
-    content.Size = UDim2.new(1,-90,1,-35)
-    content.Position = UDim2.new(0,90,0,35)
+    ------------------------------------------------------------------
+    -- Floating Circle (for minimize)
+    ------------------------------------------------------------------
+    local float = Instance.new("TextButton")
+    float.Size = UDim2.new(0,50,0,50)
+    float.Position = UDim2.new(0,100,0,100)
+    float.BackgroundColor3 = Color3.fromRGB(0,170,255)
+    float.Text = "KaLi"
+    float.Font = Enum.Font.GothamBold
+    float.TextSize = 12
+    float.TextColor3 = Color3.new(1,1,1)
+    float.Visible = false
+    float.Parent = gui
+    Instance.new("UICorner", float).CornerRadius = UDim.new(1,0) -- circle
+
+    ------------------------------------------------------------------
+    -- Example Content
+    ------------------------------------------------------------------
+    local content = Instance.new("TextLabel")
+    content.Size = UDim2.new(1,0,1,-35)
+    content.Position = UDim2.new(0,0,0,35)
     content.BackgroundTransparency = 1
+    content.Text = "KaLiHub Mobile UI"
+    content.TextColor3 = Color3.new(1,1,1)
+    content.Font = Enum.Font.Gotham
+    content.TextSize = 14
     content.Parent = window
 
-    -- Pages system
-    local pages = {}
+    ------------------------------------------------------------------
+    -- Close / Minimize Logic
+    ------------------------------------------------------------------
+    close.MouseButton1Click:Connect(function()
+        gui:Destroy()
+    end)
 
-    local function createPage(name)
-        local page = Instance.new("Frame")
-        page.Size = UDim2.new(1,0,1,0)
-        page.BackgroundTransparency = 1
-        page.Visible = false
-        page.Parent = content
+    minimize.MouseButton1Click:Connect(function()
+        window.Visible = false
+        float.Visible = true
+    end)
 
-        local layout = Instance.new("UIListLayout")
-        layout.Padding = UDim.new(0,6)
-        layout.Parent = page
+    float.MouseButton1Click:Connect(function()
+        window.Visible = true
+        float.Visible = false
+    end)
 
-        local tab = Instance.new("TextButton")
-        tab.Size = UDim2.new(1,0,0,32) -- smaller tab
-        tab.Text = name
-        tab.Font = Enum.Font.Gotham
-        tab.TextSize = 12
-        tab.TextColor3 = Color3.new(1,1,1)
-        tab.BackgroundColor3 = Color3.fromRGB(55,55,70)
-        tab.Parent = sidebar
-        Instance.new("UICorner", tab).CornerRadius = UDim.new(0,6)
+    ------------------------------------------------------------------
+    -- Drag Function (Mobile + PC)
+    ------------------------------------------------------------------
+    local function makeDraggable(frame)
+        local dragging = false
+        local dragStart, startPos
 
-        tab.MouseButton1Click:Connect(function()
-            for _,p in pairs(pages) do p.Visible = false end
-            page.Visible = true
+        frame.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1
+            or input.UserInputType == Enum.UserInputType.Touch then
+                dragging = true
+                dragStart = input.Position
+                startPos = frame.Position
+
+                input.Changed:Connect(function()
+                    if input.UserInputState == Enum.UserInputState.End then
+                        dragging = false
+                    end
+                end)
+            end
         end)
 
-        pages[#pages+1] = page
-        return page
+        UserInputService.InputChanged:Connect(function(input)
+            if dragging and (
+                input.UserInputType == Enum.UserInputType.MouseMovement
+                or input.UserInputType == Enum.UserInputType.Touch
+            ) then
+                local delta = input.Position - dragStart
+                frame.Position = UDim2.new(
+                    startPos.X.Scale,
+                    startPos.X.Offset + delta.X,
+                    startPos.Y.Scale,
+                    startPos.Y.Offset + delta.Y
+                )
+            end
+        end)
     end
 
-    local function createButton(parent, text, callback)
-        local btn = Instance.new("TextButton")
-        btn.Size = UDim2.new(1,-10,0,32)
-        btn.Text = text
-        btn.Font = Enum.Font.Gotham
-        btn.TextSize = 12
-        btn.TextColor3 = Color3.new(1,1,1)
-        btn.BackgroundColor3 = Color3.fromRGB(60,60,80)
-        btn.Parent = parent
-        Instance.new("UICorner", btn).CornerRadius = UDim.new(0,6)
-        btn.MouseButton1Click:Connect(callback)
-    end
-
-    -- Pages
-    local main = createPage("Main")
-    main.Visible = true
-    createButton(main, "Test", function()
-        print("Clicked")
-    end)
-
-    local settings = createPage("Settings")
-    createButton(settings, "Reset", function()
-        print("Reset")
-    end)
-
-    ------------------------------------------------------------------
-    -- MOBILE + PC DRAG SYSTEM
-    ------------------------------------------------------------------
-    local dragging = false
-    local dragStart, startPos
-
-    local function update(input)
-        local delta = input.Position - dragStart
-        window.Position = UDim2.new(
-            startPos.X.Scale,
-            startPos.X.Offset + delta.X,
-            startPos.Y.Scale,
-            startPos.Y.Offset + delta.Y
-        )
-    end
-
-    top.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1
-        or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
-            dragStart = input.Position
-            startPos = window.Position
-
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
-                end
-            end)
-        end
-    end)
-
-    top.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement
-        or input.UserInputType == Enum.UserInputType.Touch then
-            dragInput = input
-        end
-    end)
-
-    UserInputService.InputChanged:Connect(function(input)
-        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement
-        or input.UserInputType == Enum.UserInputType.Touch) then
-            update(input)
-        end
-    end)
+    makeDraggable(top)    -- drag window
+    makeDraggable(float)  -- drag floating circle
 
 end)
