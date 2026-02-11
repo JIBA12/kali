@@ -1,4 +1,4 @@
--- KaLiHub V2 - Mobile-Friendly Scrollable Tabs (Floating Button Memory Fix)
+-- KaLiHub V2 - Mobile-Friendly Scrollable Tabs (Dynamic Tab Content)
 
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
@@ -232,17 +232,25 @@ local KaLiHub = {}
 local Tabs = {}
 
 function KaLiHub:CreateTab(name)
+    -- Tab content frame inside right scrollable area
     local TabFrame = Instance.new("Frame")
-    TabFrame.Size = UDim2.new(1,0,0,0)
+    TabFrame.Size = UDim2.new(1,0,0,0) -- dynamic height
     TabFrame.BackgroundTransparency = 1
     TabFrame.Visible = false
     TabFrame.Parent = ContentScroll
 
+    -- UIListLayout for dynamic stacking
     local TabLayout = Instance.new("UIListLayout")
     TabLayout.SortOrder = Enum.SortOrder.LayoutOrder
     TabLayout.Padding = UDim.new(0,5)
     TabLayout.Parent = TabFrame
 
+    -- Auto-resize TabFrame height
+    TabLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        TabFrame.Size = UDim2.new(1,0,0,TabLayout.AbsoluteContentSize.Y + 10)
+    end)
+
+    -- Left sidebar button
     local TabButton = Instance.new("TextButton")
     TabButton.Size = UDim2.new(1,0,0,40)
     TabButton.Text = name
@@ -266,6 +274,7 @@ function KaLiHub:CreateTab(name)
 
     local Tab = {}
 
+    -- Section
     function Tab:Section(text)
         local SectionLabel = Instance.new("TextLabel")
         SectionLabel.Size = UDim2.new(1,0,0,20)
@@ -284,6 +293,7 @@ function KaLiHub:CreateTab(name)
         Divider.Parent = TabFrame
     end
 
+    -- Button
     function Tab:Button(text, callback)
         local Btn = Instance.new("TextButton")
         Btn.Size = UDim2.new(1,0,0,25)
@@ -300,6 +310,7 @@ function KaLiHub:CreateTab(name)
         end)
     end
 
+    -- Toggle
     function Tab:Toggle(text, default, callback)
         local state = default
         local Btn = Instance.new("TextButton")
