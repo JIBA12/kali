@@ -1,4 +1,4 @@
--- KaLiHub V2 - Mobile-Friendly Scrollable Tabs (Dynamic Tab Content)
+-- KaLiHub V2 - Mobile-Friendly Dropdown Sidebar Tabs
 
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
@@ -32,11 +32,11 @@ ScreenGui.Parent = parentGui or PlayerGui
 -- Main Window
 -- ===============================
 local HEADER_HEIGHT = 40
-local SIDEBAR_WIDTH = 100
+local SIDEBAR_WIDTH = 120
 
 local Main = Instance.new("Frame")
-Main.Size = UDim2.new(0, 400, 0, 300)
-Main.Position = UDim2.new(0.5, -200, 0.5, -150)
+Main.Size = UDim2.new(0, 450, 0, 300)
+Main.Position = UDim2.new(0.5, -225, 0.5, -150)
 Main.BackgroundColor3 = Color3.fromRGB(20,20,25)
 Main.BackgroundTransparency = 0.05
 Main.BorderSizePixel = 0
@@ -90,7 +90,7 @@ Minimize.Parent = Header
 Instance.new("UICorner", Minimize)
 
 -- ===============================
--- Left Scrollable Tab Sidebar
+-- Left Sidebar (Dropdown Tabs)
 -- ===============================
 local TabsSidebar = Instance.new("ScrollingFrame")
 TabsSidebar.Size = UDim2.new(0,SIDEBAR_WIDTH,1,-HEADER_HEIGHT)
@@ -101,7 +101,7 @@ TabsSidebar.Parent = Main
 
 local TabsLayout = Instance.new("UIListLayout")
 TabsLayout.SortOrder = Enum.SortOrder.LayoutOrder
-TabsLayout.Padding = UDim.new(0,5)
+TabsLayout.Padding = UDim.new(0,2)
 TabsLayout.Parent = TabsSidebar
 
 -- ===============================
@@ -160,7 +160,7 @@ end
 Drag(Main)
 
 -- ===============================
--- Minimize / Close (Floating Button Memory Fix)
+-- Minimize / Close (Floating Button Memory)
 -- ===============================
 local FloatingButton
 local lastFloatingPosition = UDim2.new(0.5,-20,0.5,-20)
@@ -180,7 +180,6 @@ Minimize.MouseButton1Click:Connect(function()
         FloatingButton.Parent = ScreenGui
         Instance.new("UICorner", FloatingButton)
 
-        -- Drag FloatingButton
         local dragging = false
         local dragStart, startPos
 
@@ -194,7 +193,7 @@ Minimize.MouseButton1Click:Connect(function()
                 input.Changed:Connect(function()
                     if input.UserInputState == Enum.UserInputState.End then
                         dragging = false
-                        lastFloatingPosition = FloatingButton.Position -- remember position
+                        lastFloatingPosition = FloatingButton.Position
                     end
                 end)
             end
@@ -226,124 +225,150 @@ Close.MouseButton1Click:Connect(function()
 end)
 
 -- ===============================
--- KaLiHub Framework
+-- KaLiHub Framework with Dropdown Sidebar Tabs
 -- ===============================
 local KaLiHub = {}
 local Tabs = {}
 
-function KaLiHub:CreateTab(name)
-    -- Tab content frame inside right scrollable area
-    local TabFrame = Instance.new("Frame")
-    TabFrame.Size = UDim2.new(1,0,0,0) -- dynamic height
-    TabFrame.BackgroundTransparency = 1
-    TabFrame.Visible = false
-    TabFrame.Parent = ContentScroll
+function KaLiHub:CreateTab(mainName)
+    local mainTab = {}
 
-    -- UIListLayout for dynamic stacking
-    local TabLayout = Instance.new("UIListLayout")
-    TabLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    TabLayout.Padding = UDim.new(0,5)
-    TabLayout.Parent = TabFrame
+    -- Main Button
+    local MainButton = Instance.new("TextButton")
+    MainButton.Size = UDim2.new(1,0,0,35)
+    MainButton.Text = mainName.." ▼"
+    MainButton.Font = Enum.Font.GothamBold
+    MainButton.TextSize = 14
+    MainButton.TextColor3 = Color3.fromRGB(255,255,255)
+    MainButton.BackgroundColor3 = Color3.fromRGB(40,40,50)
+    MainButton.Parent = TabsSidebar
+    Instance.new("UICorner", MainButton)
 
-    -- Auto-resize TabFrame height
-    TabLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        TabFrame.Size = UDim2.new(1,0,0,TabLayout.AbsoluteContentSize.Y + 10)
-    end)
+    local DropdownOpen = false
+    local DropdownButtons = {}
 
-    -- Left sidebar button
-    local TabButton = Instance.new("TextButton")
-    TabButton.Size = UDim2.new(1,0,0,40)
-    TabButton.Text = name
-    TabButton.Font = Enum.Font.GothamBold
-    TabButton.TextSize = 14
-    TabButton.TextColor3 = Color3.fromRGB(255,255,255)
-    TabButton.BackgroundColor3 = Color3.fromRGB(40,40,50)
-    TabButton.Parent = TabsSidebar
-    Instance.new("UICorner", TabButton)
-
-    TabButton.MouseButton1Click:Connect(function()
-        for _,v in pairs(Tabs) do
-            v.Frame.Visible = false
-            v.Button.BackgroundColor3 = Color3.fromRGB(40,40,50)
+    -- Toggle dropdown visibility
+    MainButton.MouseButton1Click:Connect(function()
+        DropdownOpen = not DropdownOpen
+        for _,btn in pairs(DropdownButtons) do
+            btn.Visible = DropdownOpen
         end
-        TabFrame.Visible = true
-        TabButton.BackgroundColor3 = Color3.fromRGB(70,160,255)
     end)
 
-    Tabs[name] = {Frame = TabFrame, Button = TabButton}
-
-    local Tab = {}
-
-    -- Section
-    function Tab:Section(text)
-        local SectionLabel = Instance.new("TextLabel")
-        SectionLabel.Size = UDim2.new(1,0,0,20)
-        SectionLabel.BackgroundTransparency = 1
-        SectionLabel.Text = text
-        SectionLabel.TextColor3 = Color3.fromRGB(100,180,255)
-        SectionLabel.Font = Enum.Font.GothamBold
-        SectionLabel.TextSize = 13
-        SectionLabel.TextXAlignment = Enum.TextXAlignment.Left
-        SectionLabel.Parent = TabFrame
-
-        local Divider = Instance.new("Frame")
-        Divider.Size = UDim2.new(1,0,0,1)
-        Divider.BackgroundColor3 = Color3.fromRGB(60,60,75)
-        Divider.BorderSizePixel = 0
-        Divider.Parent = TabFrame
-    end
-
-    -- Button
-    function Tab:Button(text, callback)
+    -- Function to create sub-buttons under main dropdown
+    function mainTab:Button(name)
         local Btn = Instance.new("TextButton")
-        Btn.Size = UDim2.new(1,0,0,25)
+        Btn.Size = UDim2.new(1,-10,0,30)
+        Btn.Position = UDim2.new(0,10,0,0)
         Btn.BackgroundColor3 = Color3.fromRGB(60,60,75)
-        Btn.Text = text
+        Btn.Text = name
         Btn.TextColor3 = Color3.fromRGB(255,255,255)
         Btn.Font = Enum.Font.GothamBold
-        Btn.TextSize = 14
-        Btn.Parent = TabFrame
+        Btn.TextSize = 13
+        Btn.Visible = false
+        Btn.Parent = TabsSidebar
         Instance.new("UICorner", Btn)
 
-        Btn.MouseButton1Click:Connect(function()
-            pcall(callback)
+        table.insert(DropdownButtons, Btn)
+
+        -- Create content frame for this button
+        local ContentFrame = Instance.new("Frame")
+        ContentFrame.Size = UDim2.new(1,-10,0,0)
+        ContentFrame.Position = UDim2.new(0,5,0,0)
+        ContentFrame.BackgroundTransparency = 1
+        ContentFrame.Visible = false
+        ContentFrame.Parent = ContentScroll
+
+        local Layout = Instance.new("UIListLayout")
+        Layout.SortOrder = Enum.SortOrder.LayoutOrder
+        Layout.Padding = UDim.new(0,5)
+        Layout.Parent = ContentFrame
+
+        Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+            ContentFrame.Size = UDim2.new(1,-10,0,Layout.AbsoluteContentSize.Y + 10)
         end)
+
+        Btn.MouseButton1Click:Connect(function()
+            for _,v in pairs(Tabs) do
+                v.Frame.Visible = false
+            end
+            ContentFrame.Visible = true
+        end)
+
+        local SubTab = {}
+
+        function SubTab:Section(text)
+            local Label = Instance.new("TextLabel")
+            Label.Size = UDim2.new(1,0,0,20)
+            Label.BackgroundTransparency = 1
+            Label.Text = text
+            Label.TextColor3 = Color3.fromRGB(100,180,255)
+            Label.Font = Enum.Font.GothamBold
+            Label.TextSize = 13
+            Label.TextXAlignment = Enum.TextXAlignment.Left
+            Label.Parent = ContentFrame
+
+            local Divider = Instance.new("Frame")
+            Divider.Size = UDim2.new(1,0,0,1)
+            Divider.BackgroundColor3 = Color3.fromRGB(60,60,75)
+            Divider.BorderSizePixel = 0
+            Divider.Parent = ContentFrame
+        end
+
+        function SubTab:Button(text, callback)
+            local Btn2 = Instance.new("TextButton")
+            Btn2.Size = UDim2.new(1,0,0,25)
+            Btn2.BackgroundColor3 = Color3.fromRGB(60,60,75)
+            Btn2.Text = text
+            Btn2.TextColor3 = Color3.fromRGB(255,255,255)
+            Btn2.Font = Enum.Font.GothamBold
+            Btn2.TextSize = 14
+            Btn2.Parent = ContentFrame
+            Instance.new("UICorner", Btn2)
+
+            Btn2.MouseButton1Click:Connect(function()
+                pcall(callback)
+            end)
+        end
+
+        function SubTab:Toggle(text, default, callback)
+            local state = default
+            local Btn2 = Instance.new("TextButton")
+            Btn2.Size = UDim2.new(1,0,0,25)
+            Btn2.BackgroundColor3 = state and Color3.fromRGB(0,170,0) or Color3.fromRGB(170,0,0)
+            Btn2.Text = text
+            Btn2.TextColor3 = Color3.fromRGB(255,255,255)
+            Btn2.Font = Enum.Font.GothamBold
+            Btn2.TextSize = 14
+            Btn2.Parent = ContentFrame
+            Instance.new("UICorner", Btn2)
+
+            Btn2.MouseButton1Click:Connect(function()
+                state = not state
+                Btn2.BackgroundColor3 = state and Color3.fromRGB(0,170,0) or Color3.fromRGB(170,0,0)
+                pcall(function() callback(state) end)
+            end)
+        end
+
+        Tabs[name] = {Frame = ContentFrame}
+
+        return SubTab
     end
 
-    -- Toggle
-    function Tab:Toggle(text, default, callback)
-        local state = default
-        local Btn = Instance.new("TextButton")
-        Btn.Size = UDim2.new(1,0,0,25)
-        Btn.BackgroundColor3 = state and Color3.fromRGB(0,170,0) or Color3.fromRGB(170,0,0)
-        Btn.Text = text
-        Btn.TextColor3 = Color3.fromRGB(255,255,255)
-        Btn.Font = Enum.Font.GothamBold
-        Btn.TextSize = 14
-        Btn.Parent = TabFrame
-        Instance.new("UICorner", Btn)
-
-        Btn.MouseButton1Click:Connect(function()
-            state = not state
-            Btn.BackgroundColor3 = state and Color3.fromRGB(0,170,0) or Color3.fromRGB(170,0,0)
-            pcall(function() callback(state) end)
-        end)
-    end
-
-    return Tab
+    return mainTab
 end
 
 -- ===============================
--- Example Tabs
+-- Example Usage
 -- ===============================
 local MainTab = KaLiHub:CreateTab("Main")
-MainTab:Section("Features")
-MainTab:Button("Test Button", function() print("Clicked!") end)
-MainTab:Toggle("Auto Farm", false, function(v) print("Toggle:",v) end)
+local Sub1 = MainTab:Button("Features")
+Sub1:Button("Test Button", function() print("Clicked!") end)
+Sub1:Toggle("Auto Farm", false, function(v) print("Toggle:",v) end)
 
 local PlayerTab = KaLiHub:CreateTab("Player")
-PlayerTab:Section("Player Options")
-PlayerTab:Button("Speed Boost", function()
+local Sub2 = PlayerTab:Button("Player Options")
+Sub2:Button("Speed Boost", function()
     local char = Player.Character
     if char and char:FindFirstChildOfClass("Humanoid") then
         char.Humanoid.WalkSpeed = 50
