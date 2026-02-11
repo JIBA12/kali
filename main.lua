@@ -28,14 +28,14 @@ pcall(function()
 
     -- Main Window
     local window = Instance.new("Frame")
-    window.Size = UDim2.new(0, 470, 0, 360)
+    window.Size = UDim2.new(0, 520, 0, 360)
     window.Position = UDim2.new(0.5, -260, 0.5, -180)
     window.BackgroundColor3 = Color3.fromRGB(24,24,30)
-    window.BorderSizePixel = 2
+    window.BorderSizePixel = 0
     window.Parent = gui
     window.Active = true
 
-    Instance.new("UICorner", window).CornerRadius = UDim.new(0,15)
+    Instance.new("UICorner", window).CornerRadius = UDim.new(0,10)
 
     -- Top Bar
     local top = Instance.new("Frame")
@@ -182,7 +182,7 @@ pcall(function()
     end
 
     -- Pages
-    local main = createPage("Sample")
+    local main = createPage("Main")
     main.Visible = true
 
     createButton(main, "Test Action", function()
