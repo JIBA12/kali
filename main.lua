@@ -1,39 +1,48 @@
 -- ============================================
--- Jnkie Key System with GUI Prompt + KaLiHub V2
+-- KaLiHub V2 with Jnkie Key System
 -- ============================================
 
 -- Services
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
-
 local Player = Players.LocalPlayer
 local PlayerGui = Player:WaitForChild("PlayerGui")
 
+-- =========================
 -- Load Jnkie SDK
-local Junkie = loadstring(game:HttpGet("https://jnkie.com/sdk/library.lua"))()
-Junkie.service = "KaLiHubV2"  -- your service name
-Junkie.identifier = "12345"    -- your identifier from Jnkie
+-- =========================
+local SDK_URL = "https://cdn.jnk.ws/roblox/sdk.lua" -- your public SDK URL
+local success, Junkie = pcall(function()
+    return loadstring(game:HttpGet(SDK_URL))()
+end)
+
+if not success or not Junkie then
+    warn("Failed to load Jnkie SDK!")
+    return
+end
+
+-- Configure Jnkie
+Junkie.service = "KaLiHubV2"      -- set your service name from dashboard
+Junkie.identifier = "12345"        -- set your identifier from dashboard
 Junkie.provider = "Mixed"
 
--- ================
--- Key Prompt GUI
--- ================
+-- =========================
+-- Key Input GUI
+-- =========================
 local KeyGui = Instance.new("ScreenGui")
 KeyGui.Name = "KaLiKeyGUI"
 KeyGui.ResetOnSpawn = false
 KeyGui.Parent = CoreGui
 
--- Background
 local Bg = Instance.new("Frame")
-Bg.Size = UDim2.new(0, 300, 0, 150)
-Bg.Position = UDim2.new(0.5, -150, 0.5, -75)
+Bg.Size = UDim2.new(0,300,0,150)
+Bg.Position = UDim2.new(0.5,-150,0.5,-75)
 Bg.BackgroundColor3 = Color3.fromRGB(25,25,30)
 Bg.BorderSizePixel = 0
 Bg.Parent = KeyGui
 Instance.new("UICorner", Bg)
 
--- Title
 local Label = Instance.new("TextLabel")
 Label.Size = UDim2.new(1,-20,0,30)
 Label.Position = UDim2.new(0,10,0,10)
@@ -44,7 +53,6 @@ Label.Font = Enum.Font.GothamBold
 Label.TextSize = 18
 Label.Parent = Bg
 
--- TextBox
 local TextBox = Instance.new("TextBox")
 TextBox.Size = UDim2.new(1,-20,0,35)
 TextBox.Position = UDim2.new(0,10,0,50)
@@ -57,7 +65,6 @@ TextBox.TextSize = 16
 TextBox.Parent = Bg
 Instance.new("UICorner", TextBox)
 
--- Submit Button
 local SubmitBtn = Instance.new("TextButton")
 SubmitBtn.Size = UDim2.new(0,100,0,30)
 SubmitBtn.Position = UDim2.new(1,-110,1,-40)
@@ -69,7 +76,6 @@ SubmitBtn.TextSize = 16
 SubmitBtn.Parent = Bg
 Instance.new("UICorner", SubmitBtn)
 
--- Feedback Label
 local Feedback = Instance.new("TextLabel")
 Feedback.Size = UDim2.new(1,-20,0,20)
 Feedback.Position = UDim2.new(0,10,0,90)
@@ -80,38 +86,10 @@ Feedback.TextSize = 14
 Feedback.Text = ""
 Feedback.Parent = Bg
 
--- Validate Key Function
-local function validateKey(key)
-    local result = Junkie.check_key(key)
-    return result
-end
-
--- On Submit
-SubmitBtn.MouseButton1Click:Connect(function()
-    local key = TextBox.Text
-    if #key < 5 then
-        Feedback.Text = "Key too short!"
-        return
-    end
-
-    Feedback.Text = "Validating..."
-    local result = validateKey(key)
-    if result.valid then
-        getgenv().SCRIPT_KEY = key
-        -- Destroy key GUI
-        KeyGui:Destroy()
-        -- Load main GUI
-        loadKaLiHub()
-    else
-        Feedback.Text = "Invalid key!"
-    end
-end)
-
--- ================
--- MAIN KaLiHub V2
--- ================
-function loadKaLiHub()
-
+-- =========================
+-- Function: Load KaLiHub V2 GUI
+-- =========================
+local function loadKaLiHub()
     -- Remove old GUI
     pcall(function()
         if CoreGui:FindFirstChild("KaLiHubV2") then
@@ -119,18 +97,15 @@ function loadKaLiHub()
         end
     end)
 
-    local parentGui = CoreGui or PlayerGui
     local HEADER_HEIGHT = 35
-
-    -- ScreenGui + Main Frame
     local ScreenGui = Instance.new("ScreenGui")
     ScreenGui.Name = "KaLiHubV2"
     ScreenGui.ResetOnSpawn = false
-    ScreenGui.Parent = parentGui
+    ScreenGui.Parent = CoreGui
 
     local Main = Instance.new("Frame")
-    Main.Size = UDim2.new(0, 350, 0, 220)
-    Main.Position = UDim2.new(0.5, -175, 0.5, -110)
+    Main.Size = UDim2.new(0,350,0,220)
+    Main.Position = UDim2.new(0.5,-175,0.5,-110)
     Main.BackgroundColor3 = Color3.fromRGB(20,20,25)
     Main.BorderSizePixel = 0
     Main.Parent = ScreenGui
@@ -139,7 +114,7 @@ function loadKaLiHub()
     MainStroke.Color = Color3.fromRGB(80,160,255)
     MainStroke.Thickness = 1
 
-    -- Header + Title + Buttons
+    -- Header
     local Header = Instance.new("Frame")
     Header.Size = UDim2.new(1,0,0,HEADER_HEIGHT)
     Header.BackgroundTransparency = 1
@@ -178,7 +153,6 @@ function loadKaLiHub()
     Minimize.Parent = Header
     Instance.new("UICorner", Minimize)
 
-    -- Header Line
     local HeaderLine = Instance.new("Frame")
     HeaderLine.Size = UDim2.new(1,0,0,1)
     HeaderLine.Position = UDim2.new(0,0,0,HEADER_HEIGHT-1)
@@ -186,18 +160,16 @@ function loadKaLiHub()
     HeaderLine.BorderSizePixel = 0
     HeaderLine.Parent = Main
 
-    -- Make draggable
+    -- Drag function
     local function makeDraggable(frame)
         local dragging = false
         local dragStart, startPos
-
         frame.InputBegan:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseButton1 or
                input.UserInputType == Enum.UserInputType.Touch then
                 dragging = true
                 dragStart = input.Position
                 startPos = frame.Position
-
                 input.Changed:Connect(function()
                     if input.UserInputState == Enum.UserInputState.End then
                         dragging = false
@@ -205,7 +177,6 @@ function loadKaLiHub()
                 end)
             end
         end)
-
         UIS.InputChanged:Connect(function(input)
             if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
                 local delta = input.Position - dragStart
@@ -218,10 +189,9 @@ function loadKaLiHub()
             end
         end)
     end
-
     makeDraggable(Main)
 
-    -- Minimize/Close actions
+    -- Minimize / Close
     local FloatingButton
     local lastPos = UDim2.new(0.5,-20,0.5,-20)
 
@@ -254,3 +224,24 @@ function loadKaLiHub()
         ScreenGui:Destroy()
     end)
 end
+
+-- =========================
+-- Submit Button Logic
+-- =========================
+SubmitBtn.MouseButton1Click:Connect(function()
+    local key = TextBox.Text
+    if #key < 5 then
+        Feedback.Text = "Key too short!"
+        return
+    end
+
+    Feedback.Text = "Validating..."
+    local result = Junkie.check_key(key)
+    if result.valid then
+        getgenv().SCRIPT_KEY = key
+        KeyGui:Destroy()
+        loadKaLiHub()
+    else
+        Feedback.Text = "Invalid key!"
+    end
+end)
