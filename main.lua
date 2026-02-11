@@ -52,7 +52,7 @@ Title.Text = "KaLiHub V2"
 
 Title.TextColor3 = Color3.fromRGB(200,200,255)
 Title.Font = Enum.Font.GothamBold
-Title.TextSize = 14
+Title.TextSize = 12
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = Header
 
