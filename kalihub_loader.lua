@@ -1,61 +1,37 @@
--- KaLiHub Loader (Stable Version)
+-- KaLiHub Secure Loader (Main Branch)
 
-print("[KaLiHub] Loader started")
+local HttpService = game:GetService("HttpService")
 
-local REPO = "[https://raw.githubusercontent.com/JIBA12/kali/main/](https://raw.githubusercontent.com/JIBA12/kali/main/)"
+local BASE = "https://raw.githubusercontent.com/JIBA12/kali/main/"
 
--- Wait for game
-if not game:IsLoaded() then
-game.Loaded:Wait()
-end
+local function LoadScript(name)
+    local success, result = pcall(function()
+        return game:HttpGet(BASE .. name)
+    end)
 
--- Test HttpGet first
-local function fetch(url)
-local success, result = pcall(function()
-return game:HttpGet(url)
-end)
-if success then
-return result
-else
-warn("[KaLiHub] Failed to load:", url)
-return nil
-end
-end
-
--- Try loading Jnkie (optional)
-local Junkie
-local ok, err = pcall(function()
-Junkie = loadstring(game:HttpGet("[https://jnkie.com/sdk/library.lua"))(](https://jnkie.com/sdk/library.lua%22%29%29%28))
-end)
-
-if ok and Junkie then
-print("[KaLiHub] Jnkie loaded")
-Junkie.service = "KaLiHubV3"
-Junkie.identifier = "12345"
-Junkie.provider = "Mixed"
-
-```
--- Check existing key
-if getgenv().SCRIPT_KEY then
-    local result = Junkie.check_key(getgenv().SCRIPT_KEY)
-    if result and result.valid then
-        print("[KaLiHub] Key valid, loading hub")
-        local hub = fetch(REPO .. "kalihub.lua")
-        if hub then loadstring(hub)() end
-        return
+    if success and result and result ~= "" then
+        local func = loadstring(result)
+        if func then
+            return func()
+        else
+            warn("KaLiHub: Failed to compile " .. name)
+        end
+    else
+        warn("KaLiHub: Failed to load " .. name)
     end
 end
-```
 
-else
-warn("[KaLiHub] Jnkie failed to load, continuing without pre-check")
-end
+-- Global Key System
+getgenv().KaLiHub = {
+    Key = "KALI-ACCESS-2026", -- change this to your real key
+    Verified = false
+}
 
--- Load Key GUI
-print("[KaLiHub] Loading Key GUI")
-local keygui = fetch(REPO .. "keygui.lua")
-if keygui then
-loadstring(keygui)()
-else
-warn("[KaLiHub] Key GUI failed to load")
-end
+-- Load Key GUI first
+LoadScript("keygui.lua")
+
+-- Wait for verification
+repeat task.wait() until getgenv().KaLiHub.Verified == true
+
+-- Load Main Hub
+LoadScript("kalihub.lua")
