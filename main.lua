@@ -28,7 +28,7 @@ pcall(function()
 
     -- Main Window
     local window = Instance.new("Frame")
-    window.Size = UDim2.new(0, 520, 0, 360)
+    window.Size = UDim2.new(0, 470, 0, 360)
     window.Position = UDim2.new(0.5, -260, 0.5, -180)
     window.BackgroundColor3 = Color3.fromRGB(24,24,30)
     window.BorderSizePixel = 0
