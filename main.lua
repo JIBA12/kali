@@ -1,4 +1,39 @@
--- KaLiHub V2 Minimal GUI (Smaller, Draggable + Floating Icon + Header Line)
+-- ===============================
+-- Jnkie Key System Integration
+-- ===============================
+-- Load Jnkie SDK
+local Junkie = loadstring(game:HttpGet("https://jnkie.com/sdk/library.lua"))()
+Junkie.service = "KaLiHubV2"     -- Your service name in Jnkie
+Junkie.identifier = "12345"       -- Your identifier from the dashboard
+Junkie.provider = "Mixed"
+
+-- Prompt user for key (can also replace with GUI input)
+local validatedKey = nil
+while not validatedKey do
+    local keyLink = Junkie.get_key_link()
+    if keyLink and setclipboard then
+        setclipboard(keyLink)
+        print("Key link copied to clipboard!")
+    end
+
+    -- Roblox input prompt (replace with TextBox for GUI)
+    local userKey = "" -- Put your GUI textbox input here
+    repeat task.wait() until userKey and #userKey > 0
+
+    local validation = Junkie.check_key(userKey)
+    if validation.valid then
+        validatedKey = userKey
+        print("Key validated!")
+    else
+        warn("Invalid key: " .. (validation.error or "Unknown"))
+    end
+end
+
+getgenv().SCRIPT_KEY = validatedKey
+
+-- ===============================
+-- KaLiHub V2 Minimal GUI
+-- ===============================
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
@@ -16,9 +51,7 @@ end)
 local parentGui = CoreGui or PlayerGui
 local HEADER_HEIGHT = 35
 
--- ===============================
 -- ScreenGui + Main Frame
--- ===============================
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "KaLiHubV2"
 ScreenGui.ResetOnSpawn = false
@@ -35,9 +68,7 @@ local MainStroke = Instance.new("UIStroke", Main)
 MainStroke.Color = Color3.fromRGB(80,160,255)
 MainStroke.Thickness = 1
 
--- ===============================
 -- Header + Title + Buttons
--- ===============================
 local Header = Instance.new("Frame")
 Header.Size = UDim2.new(1,0,0,HEADER_HEIGHT)
 Header.BackgroundTransparency = 1
@@ -48,8 +79,6 @@ Title.Size = UDim2.new(1,-70,1,0)
 Title.Position = UDim2.new(0,10,0,0)
 Title.BackgroundTransparency = 1
 Title.Text = "KaLiHub V2"
-Title.Text = "KaLiHub V2"
-
 Title.TextColor3 = Color3.fromRGB(200,200,255)
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 12
@@ -78,9 +107,7 @@ Minimize.TextSize = 14
 Minimize.Parent = Header
 Instance.new("UICorner", Minimize)
 
--- ===============================
 -- Header Line
--- ===============================
 local HeaderLine = Instance.new("Frame")
 HeaderLine.Size = UDim2.new(1,0,0,1)
 HeaderLine.Position = UDim2.new(0,0,0,HEADER_HEIGHT-1)
@@ -88,9 +115,7 @@ HeaderLine.BackgroundColor3 = Color3.fromRGB(80,160,255)
 HeaderLine.BorderSizePixel = 0
 HeaderLine.Parent = Main
 
--- ===============================
 -- Drag Function (Reusable)
--- ===============================
 local function makeDraggable(frame)
     local dragging = false
     local dragStart, startPos
@@ -125,9 +150,7 @@ end
 
 makeDraggable(Main)
 
--- ===============================
 -- Minimize / Close
--- ===============================
 local FloatingButton
 local lastPos = UDim2.new(0.5,-20,0.5,-20)
 
