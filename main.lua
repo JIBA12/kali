@@ -1,8 +1,7 @@
--- KaLiHub V2 - Modern UI (Mobile + PC, Small Version)
+-- KaLiHub V2 - Mobile-Friendly Dropdown Tabs
 
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
 local CoreGui = game:GetService("CoreGui")
 
 local Player = Players.LocalPlayer
@@ -30,11 +29,11 @@ ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = parentGui or PlayerGui
 
 -- ===============================
--- Main Window (smaller)
+-- Main Window (smaller height)
 -- ===============================
 local Main = Instance.new("Frame")
-Main.Size = UDim2.new(0,300,0,350)  -- smaller width and height
-Main.Position = UDim2.new(0.5,-150,0.5,-175)  -- center on screen
+Main.Size = UDim2.new(0, 300, 0, 250) -- reduced height
+Main.Position = UDim2.new(0.5, -150, 0.5, -125) -- center
 Main.BackgroundColor3 = Color3.fromRGB(20,20,25)
 Main.BackgroundTransparency = 0.05
 Main.BorderSizePixel = 0
@@ -47,22 +46,16 @@ local MainStroke = Instance.new("UIStroke", Main)
 MainStroke.Color = Color3.fromRGB(80,160,255)
 MainStroke.Thickness = 1
 
-local MainGradient = Instance.new("UIGradient", Main)
-MainGradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(30,30,35)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(20,20,25))
-}
-
 -- ===============================
 -- Header
 -- ===============================
 local Header = Instance.new("Frame")
-Header.Size = UDim2.new(1,0,0,40)  -- smaller header
+Header.Size = UDim2.new(1,0,0,40)
 Header.BackgroundTransparency = 1
 Header.Parent = Main
 
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1,-70,1,0)
+Title.Size = UDim2.new(1,-120,1,0)
 Title.Position = UDim2.new(0,10,0,0)
 Title.BackgroundTransparency = 1
 Title.Text = "KaLiHub V2"
@@ -96,44 +89,59 @@ Minimize.Parent = Header
 Instance.new("UICorner", Minimize)
 
 -- ===============================
--- Sidebar
+-- Dropdown Tab Button
 -- ===============================
-local Sidebar = Instance.new("Frame")
-Sidebar.Size = UDim2.new(0,90,1,-40)  -- narrower for mobile
-Sidebar.Position = UDim2.new(0,0,0,40)
-Sidebar.BackgroundTransparency = 0.05
-Sidebar.BackgroundColor3 = Color3.fromRGB(30,30,40)
-Sidebar.BorderSizePixel = 0
-Sidebar.Parent = Main
+local TabDropdown = Instance.new("Frame")
+TabDropdown.Size = UDim2.new(1,-20,0,35)
+TabDropdown.Position = UDim2.new(0,10,0,45)
+TabDropdown.BackgroundColor3 = Color3.fromRGB(45,45,55)
+TabDropdown.Parent = Main
+Instance.new("UICorner", TabDropdown)
 
-local SidebarLayout = Instance.new("UIListLayout", Sidebar)
-SidebarLayout.SortOrder = Enum.SortOrder.LayoutOrder
-SidebarLayout.Padding = UDim.new(0,3)
+local SelectedTab = Instance.new("TextLabel")
+SelectedTab.Size = UDim2.new(1,-30,1,0)
+SelectedTab.Position = UDim2.new(0,5,0,0)
+SelectedTab.BackgroundTransparency = 1
+SelectedTab.Text = "Select Tab"
+SelectedTab.TextColor3 = Color3.fromRGB(255,255,255)
+SelectedTab.Font = Enum.Font.GothamBold
+SelectedTab.TextSize = 14
+SelectedTab.TextXAlignment = Enum.TextXAlignment.Left
+SelectedTab.Parent = TabDropdown
+
+local DropdownArrow = Instance.new("TextLabel")
+DropdownArrow.Size = UDim2.new(0,20,1,0)
+DropdownArrow.Position = UDim2.new(1,-25,0,0)
+DropdownArrow.BackgroundTransparency = 1
+DropdownArrow.Text = "▼"
+DropdownArrow.TextColor3 = Color3.fromRGB(200,200,255)
+DropdownArrow.Font = Enum.Font.GothamBold
+DropdownArrow.TextSize = 14
+DropdownArrow.Parent = TabDropdown
+
+local DropdownFrame = Instance.new("Frame")
+DropdownFrame.Size = UDim2.new(1,0,0,0)
+DropdownFrame.Position = UDim2.new(0,0,1,0)
+DropdownFrame.BackgroundColor3 = Color3.fromRGB(40,40,50)
+DropdownFrame.ClipsDescendants = true
+DropdownFrame.Parent = TabDropdown
+Instance.new("UICorner", DropdownFrame)
+
+local DropdownLayout = Instance.new("UIListLayout", DropdownFrame)
+DropdownLayout.SortOrder = Enum.SortOrder.LayoutOrder
+DropdownLayout.Padding = UDim.new(0,2)
 
 -- ===============================
 -- Content Area
 -- ===============================
 local Content = Instance.new("Frame")
-Content.Size = UDim2.new(1,-90,1,-40)
-Content.Position = UDim2.new(0,90,0,40)
+Content.Size = UDim2.new(1,-20,1, -90)
+Content.Position = UDim2.new(0,10,0,85)
 Content.BackgroundTransparency = 1
 Content.Parent = Main
 
 -- ===============================
--- Floating Icon
--- ===============================
-local Float = Instance.new("TextButton")
-Float.Size = UDim2.new(0,50,0,50)
-Float.Position = UDim2.new(0,15,0.5,-25)
-Float.BackgroundColor3 = Color3.fromRGB(70,170,255)
-Float.Text = "K"
-Float.TextColor3 = Color3.fromRGB(255,255,255)
-Float.Visible = false
-Float.Parent = ScreenGui
-Instance.new("UICorner", Float)
-
--- ===============================
--- Drag System
+-- Drag Function
 -- ===============================
 local function Drag(frame)
     local dragging = false
@@ -168,19 +176,12 @@ local function Drag(frame)
 end
 
 Drag(Main)
-Drag(Float)
 
 -- ===============================
 -- Minimize / Close
 -- ===============================
 Minimize.MouseButton1Click:Connect(function()
     Main.Visible = false
-    Float.Visible = true
-end)
-
-Float.MouseButton1Click:Connect(function()
-    Main.Visible = true
-    Float.Visible = false
 end)
 
 Close.MouseButton1Click:Connect(function()
@@ -188,118 +189,24 @@ Close.MouseButton1Click:Connect(function()
 end)
 
 -- ===============================
--- KaLiHub V2 Framework
+-- KaLiHub V2 Framework with Dropdown Tabs
 -- ===============================
 local KaLiHub = {}
-local firstTab = true
+local Tabs = {}
+local SelectedTabName = nil
 
 function KaLiHub:CreateTab(name)
-    local TabButton = Instance.new("TextButton")
-    TabButton.Size = UDim2.new(1,0,0,30)  -- smaller tab buttons
-    TabButton.Text = name
-    TabButton.BackgroundColor3 = Color3.fromRGB(45,45,55)
-    TabButton.TextColor3 = Color3.fromRGB(255,255,255)
-    TabButton.Parent = Sidebar
-    Instance.new("UICorner", TabButton)
-
-    local Page = Instance.new("ScrollingFrame")
-    Page.Size = UDim2.new(1,0,1,0)
-    Page.CanvasSize = UDim2.new()
-    Page.ScrollBarThickness = 5
-    Page.BackgroundTransparency = 1
-    Page.Visible = false
-    Page.Parent = Content
-
-    local Layout = Instance.new("UIListLayout", Page)
-    Layout.Padding = UDim.new(0,5)
-
-    Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        Page.CanvasSize = UDim2.new(0,0,0,Layout.AbsoluteContentSize.Y + 10)
-    end)
-
-    if firstTab then
-        firstTab = false
-        Page.Visible = true
-    end
-
-    TabButton.MouseButton1Click:Connect(function()
-        for _,v in pairs(Content:GetChildren()) do
-            if v:IsA("ScrollingFrame") then
-                v.Visible = false
-            end
-        end
-        Page.Visible = true
-    end)
+    local TabFrame = Instance.new("Frame")
+    TabFrame.Size = UDim2.new(1,0,1,0)
+    TabFrame.BackgroundTransparency = 1
+    TabFrame.Visible = false
+    TabFrame.Parent = Content
 
     local Tab = {}
 
-    function Tab:Section(text)
-        local Label = Instance.new("TextLabel")
-        Label.Size = UDim2.new(1,-10,0,20)  -- smaller section labels
-        Label.BackgroundTransparency = 1
-        Label.Text = text
-        Label.TextColor3 = Color3.fromRGB(100,180,255)
-        Label.Font = Enum.Font.GothamBold
-        Label.TextSize = 13
-        Label.TextXAlignment = Enum.TextXAlignment.Left
-        Label.Parent = Page
-    end
-
-    function Tab:Button(text, callback)
-        local Btn = Instance.new("TextButton")
-        Btn.Size = UDim2.new(1,-10,0,30)  -- smaller buttons
-        Btn.BackgroundColor3 = Color3.fromRGB(60,60,75)
-        Btn.Text = text
-        Btn.TextColor3 = Color3.fromRGB(255,255,255)
-        Btn.Parent = Page
-        Instance.new("UICorner", Btn)
-
-        Btn.MouseButton1Click:Connect(function()
-            pcall(callback)
-        end)
-    end
-
-    function Tab:Toggle(text, default, callback)
-        local state = default
-        local Btn = Instance.new("TextButton")
-        Btn.Size = UDim2.new(1,-10,0,30)  -- smaller toggles
-        Btn.BackgroundColor3 = state and Color3.fromRGB(0,170,0) or Color3.fromRGB(170,0,0)
-        Btn.Text = text
-        Btn.TextColor3 = Color3.fromRGB(255,255,255)
-        Btn.Parent = Page
-        Instance.new("UICorner", Btn)
-
-        Btn.MouseButton1Click:Connect(function()
-            state = not state
-            Btn.BackgroundColor3 = state and Color3.fromRGB(0,170,0) or Color3.fromRGB(170,0,0)
-            pcall(function()
-                callback(state)
-            end)
-        end)
-    end
-
-    return Tab
-end
-
--- ===============================
--- Example Usage
--- ===============================
-local MainTab = KaLiHub:CreateTab("Main")
-MainTab:Section("Features")
-MainTab:Button("Test Button", function()
-    print("Clicked!")
-end)
-MainTab:Toggle("Auto Farm", false, function(v)
-    print("Toggle:",v)
-end)
-
-local PlayerTab = KaLiHub:CreateTab("Player")
-PlayerTab:Section("Player Options")
-PlayerTab:Button("Speed Boost", function()
-    local char = Player.Character
-    if char and char:FindFirstChildOfClass("Humanoid") then
-        char.Humanoid.WalkSpeed = 50
-    end
-end)
-
-return KaLiHub
+    -- Add to dropdown
+    local TabButton = Instance.new("TextButton")
+    TabButton.Size = UDim2.new(1,0,0,25)
+    TabButton.BackgroundTransparency = 1
+    TabButton.Text = name
+    TabButton.TextColor3 = Color3.fromRGB(2
