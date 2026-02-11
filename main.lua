@@ -1,4 +1,4 @@
--- KaLiHub V2 Minimal GUI (Draggable + Floating Icon)
+-- KaLiHub V2 Minimal GUI (Draggable + Floating Icon + Header Line)
 
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
@@ -78,6 +78,16 @@ Minimize.Font = Enum.Font.GothamBold
 Minimize.TextSize = 16
 Minimize.Parent = Header
 Instance.new("UICorner", Minimize)
+
+-- ===============================
+-- Header Line
+-- ===============================
+local HeaderLine = Instance.new("Frame")
+HeaderLine.Size = UDim2.new(1,0,0,1) -- 1px height
+HeaderLine.Position = UDim2.new(0,0,0,HEADER_HEIGHT-1)
+HeaderLine.BackgroundColor3 = Color3.fromRGB(80,160,255) -- matching stroke color
+HeaderLine.BorderSizePixel = 0
+HeaderLine.Parent = Main
 
 -- ===============================
 -- Drag Function
