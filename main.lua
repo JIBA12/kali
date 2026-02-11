@@ -1,55 +1,52 @@
 -- ============================================
--- KaLiHub V3 – Key System + Mobile-Friendly GUI
+-- KaLiHub V3 Full Script (Optimized)
+-- Key System + Get Key + Exit + Main GUI
 -- ============================================
 
 -- Services
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
-
 local Player = Players.LocalPlayer
 local PlayerGui = Player:WaitForChild("PlayerGui")
 
--- ==================
--- Forward declaration
--- ==================
+-- Forward declare
 local loadKaLiHub
 
--- ==================
+-- ============================================
 -- Load Jnkie SDK
--- ==================
+-- ============================================
 local Junkie = loadstring(game:HttpGet("https://jnkie.com/sdk/library.lua"))()
 Junkie.service = "KaLiHubV3"
 Junkie.identifier = "12345"
 Junkie.provider = "Mixed"
 
--- ==================
--- KEY PROMPT GUI
--- ==================
+-- ============================================
+-- KEY SYSTEM GUI
+-- ============================================
 local KeyGui = Instance.new("ScreenGui")
 KeyGui.Name = "KaLiKeyGUI"
 KeyGui.ResetOnSpawn = false
 KeyGui.Parent = CoreGui
 
--- Background
 local Bg = Instance.new("Frame")
-Bg.Size = UDim2.new(0, 280, 0, 140)
-Bg.Position = UDim2.new(0.5, -140, 0.5, -70)
+Bg.Size = UDim2.new(0, 300, 0, 170)
+Bg.Position = UDim2.new(0.5, -150, 0.5, -85)
 Bg.BackgroundColor3 = Color3.fromRGB(30,30,35)
 Bg.BorderSizePixel = 0
 Bg.Parent = KeyGui
 Instance.new("UICorner", Bg)
 
 -- Title
-local Label = Instance.new("TextLabel")
-Label.Size = UDim2.new(1,-20,0,30)
-Label.Position = UDim2.new(0,10,0,10)
-Label.BackgroundTransparency = 1
-Label.Text = "Enter Script Key"
-Label.TextColor3 = Color3.fromRGB(255,255,255)
-Label.Font = Enum.Font.GothamBold
-Label.TextSize = 18
-Label.Parent = Bg
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1,-20,0,30)
+Title.Position = UDim2.new(0,10,0,10)
+Title.BackgroundTransparency = 1
+Title.Text = "KaLiHub Key System"
+Title.TextColor3 = Color3.fromRGB(255,255,255)
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 18
+Title.Parent = Bg
 
 -- TextBox
 local TextBox = Instance.new("TextBox")
@@ -64,19 +61,7 @@ TextBox.TextSize = 16
 TextBox.Parent = Bg
 Instance.new("UICorner", TextBox)
 
--- Submit Button
-local SubmitBtn = Instance.new("TextButton")
-SubmitBtn.Size = UDim2.new(0,100,0,30)
-SubmitBtn.Position = UDim2.new(1,-110,1,-40)
-SubmitBtn.BackgroundColor3 = Color3.fromRGB(80,160,255)
-SubmitBtn.Text = "Submit"
-SubmitBtn.TextColor3 = Color3.fromRGB(255,255,255)
-SubmitBtn.Font = Enum.Font.GothamBold
-SubmitBtn.TextSize = 16
-SubmitBtn.Parent = Bg
-Instance.new("UICorner", SubmitBtn)
-
--- Feedback Label
+-- Feedback
 local Feedback = Instance.new("TextLabel")
 Feedback.Size = UDim2.new(1,-20,0,20)
 Feedback.Position = UDim2.new(0,10,0,90)
@@ -87,47 +72,122 @@ Feedback.TextSize = 14
 Feedback.Text = ""
 Feedback.Parent = Bg
 
--- Validate Key Function
+-- Buttons Container
+local BtnFrame = Instance.new("Frame")
+BtnFrame.Size = UDim2.new(1,-20,0,35)
+BtnFrame.Position = UDim2.new(0,10,0,115)
+BtnFrame.BackgroundTransparency = 1
+BtnFrame.Parent = Bg
+
+-- Submit
+local SubmitBtn = Instance.new("TextButton")
+SubmitBtn.Size = UDim2.new(0.33,-5,1,0)
+SubmitBtn.Position = UDim2.new(0,0,0,0)
+SubmitBtn.BackgroundColor3 = Color3.fromRGB(80,160,255)
+SubmitBtn.Text = "Submit"
+SubmitBtn.TextColor3 = Color3.fromRGB(255,255,255)
+SubmitBtn.Font = Enum.Font.GothamBold
+SubmitBtn.TextSize = 14
+SubmitBtn.Parent = BtnFrame
+Instance.new("UICorner", SubmitBtn)
+
+-- Get Key
+local GetKeyBtn = Instance.new("TextButton")
+GetKeyBtn.Size = UDim2.new(0.33,-5,1,0)
+GetKeyBtn.Position = UDim2.new(0.33,5,0,0)
+GetKeyBtn.BackgroundColor3 = Color3.fromRGB(50,200,255)
+GetKeyBtn.Text = "Get Key"
+GetKeyBtn.TextColor3 = Color3.fromRGB(255,255,255)
+GetKeyBtn.Font = Enum.Font.GothamBold
+GetKeyBtn.TextSize = 14
+GetKeyBtn.Parent = BtnFrame
+Instance.new("UICorner", GetKeyBtn)
+
+-- Exit
+local ExitBtn = Instance.new("TextButton")
+ExitBtn.Size = UDim2.new(0.33,-5,1,0)
+ExitBtn.Position = UDim2.new(0.66,10,0,0)
+ExitBtn.BackgroundColor3 = Color3.fromRGB(200,60,60)
+ExitBtn.Text = "Exit"
+ExitBtn.TextColor3 = Color3.fromRGB(255,255,255)
+ExitBtn.Font = Enum.Font.GothamBold
+ExitBtn.TextSize = 14
+ExitBtn.Parent = BtnFrame
+Instance.new("UICorner", ExitBtn)
+
+-- ============================================
+-- Button Actions
+-- ============================================
+
+-- Replace with your real key link
+local KEY_LINK = "https://your-key-link.com"
+
+GetKeyBtn.MouseButton1Click:Connect(function()
+    pcall(function()
+        if syn and syn.request then
+            syn.request({Url = KEY_LINK, Method = "GET"})
+        else
+            game:GetService("GuiService"):OpenBrowserWindow(KEY_LINK)
+        end
+    end)
+end)
+
+ExitBtn.MouseButton1Click:Connect(function()
+    KeyGui:Destroy()
+end)
+
 local function validateKey(key)
     local result = Junkie.check_key(key)
     return result
 end
 
--- ==================
--- MAIN KaLiHub GUI
--- ==================
+SubmitBtn.MouseButton1Click:Connect(function()
+    local key = TextBox.Text
+    if #key < 5 then
+        Feedback.Text = "Key too short!"
+        return
+    end
+
+    Feedback.Text = "Validating..."
+    local result = validateKey(key)
+
+    if result.valid then
+        getgenv().SCRIPT_KEY = key
+        KeyGui:Destroy()
+        loadKaLiHub()
+    else
+        Feedback.Text = "Invalid key!"
+    end
+end)
+
+-- ============================================
+-- MAIN KALIHUB GUI
+-- ============================================
 loadKaLiHub = function()
 
-    -- Remove old GUI
+    -- Remove old
     pcall(function()
         if CoreGui:FindFirstChild("KaLiHubV3") then
             CoreGui.KaLiHubV3:Destroy()
         end
     end)
 
-    local parentGui = CoreGui or PlayerGui
-    local HEADER_HEIGHT = 35
-
-    -- ScreenGui + Main Frame
     local ScreenGui = Instance.new("ScreenGui")
     ScreenGui.Name = "KaLiHubV3"
     ScreenGui.ResetOnSpawn = false
-    ScreenGui.Parent = parentGui
+    ScreenGui.Parent = CoreGui or PlayerGui
 
     local Main = Instance.new("Frame")
-    Main.Size = UDim2.new(0, 320, 0, 200)
-    Main.Position = UDim2.new(0.5, -160, 0.5, -100)
+    Main.Size = UDim2.new(0,320,0,200)
+    Main.Position = UDim2.new(0.5,-160,0.5,-100)
     Main.BackgroundColor3 = Color3.fromRGB(25,25,30)
     Main.BorderSizePixel = 0
     Main.Parent = ScreenGui
     Instance.new("UICorner", Main)
-    local MainStroke = Instance.new("UIStroke", Main)
-    MainStroke.Color = Color3.fromRGB(80,160,255)
-    MainStroke.Thickness = 1
 
-    -- Header + Title + Buttons
+    -- Header
     local Header = Instance.new("Frame")
-    Header.Size = UDim2.new(1,0,0,HEADER_HEIGHT)
+    Header.Size = UDim2.new(1,0,0,35)
     Header.BackgroundTransparency = 1
     Header.Parent = Main
 
@@ -142,188 +202,70 @@ loadKaLiHub = function()
     Title.TextXAlignment = Enum.TextXAlignment.Left
     Title.Parent = Header
 
-    local Close = Instance.new("TextButton")
-    Close.Size = UDim2.new(0,30,0,25)
-    Close.Position = UDim2.new(1,-35,0,5)
-    Close.BackgroundColor3 = Color3.fromRGB(0,0,0)
-    Close.Text = "X"
-    Close.TextColor3 = Color3.fromRGB(255,255,255)
-    Close.Font = Enum.Font.GothamBold
-    Close.TextSize = 14
-    Close.Parent = Header
-    Instance.new("UICorner", Close)
-
+    -- Minimize
     local Minimize = Instance.new("TextButton")
     Minimize.Size = UDim2.new(0,30,0,25)
     Minimize.Position = UDim2.new(1,-70,0,5)
-    Minimize.BackgroundColor3 = Color3.fromRGB(0,0,0)
     Minimize.Text = "-"
-    Minimize.TextColor3 = Color3.fromRGB(255,255,255)
-    Minimize.Font = Enum.Font.GothamBold
-    Minimize.TextSize = 14
+    Minimize.BackgroundColor3 = Color3.fromRGB(0,0,0)
+    Minimize.TextColor3 = Color3.new(1,1,1)
     Minimize.Parent = Header
     Instance.new("UICorner", Minimize)
 
-    -- Header Line
-    local HeaderLine = Instance.new("Frame")
-    HeaderLine.Size = UDim2.new(1,0,0,1)
-    HeaderLine.Position = UDim2.new(0,0,0,HEADER_HEIGHT-1)
-    HeaderLine.BackgroundColor3 = Color3.fromRGB(80,160,255)
-    HeaderLine.BorderSizePixel = 0
-    HeaderLine.Parent = Main
+    -- Close
+    local Close = Instance.new("TextButton")
+    Close.Size = UDim2.new(0,30,0,25)
+    Close.Position = UDim2.new(1,-35,0,5)
+    Close.Text = "X"
+    Close.BackgroundColor3 = Color3.fromRGB(0,0,0)
+    Close.TextColor3 = Color3.new(1,1,1)
+    Close.Parent = Header
+    Instance.new("UICorner", Close)
 
-    -- ===============
-    -- TABS & SECTIONS
-    -- ===============
-    local TabFrame = Instance.new("Frame")
-    TabFrame.Size = UDim2.new(0, 100, 1, -HEADER_HEIGHT)
-    TabFrame.Position = UDim2.new(0,0,0,HEADER_HEIGHT)
-    TabFrame.BackgroundColor3 = Color3.fromRGB(20,20,25)
-    TabFrame.BorderSizePixel = 0
-    TabFrame.Parent = Main
-    Instance.new("UICorner", TabFrame)
+    -- Draggable
+    local dragging, dragStart, startPos
+    Header.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = Main.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then dragging = false end
+            end)
+        end
+    end)
 
-    local ContentFrame = Instance.new("Frame")
-    ContentFrame.Size = UDim2.new(1, -100, 1, -HEADER_HEIGHT)
-    ContentFrame.Position = UDim2.new(0,100,0,HEADER_HEIGHT)
-    ContentFrame.BackgroundColor3 = Color3.fromRGB(30,30,35)
-    ContentFrame.BorderSizePixel = 0
-    ContentFrame.Parent = Main
-    Instance.new("UICorner", ContentFrame)
+    UIS.InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - dragStart
+            Main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
 
-    -- Example Tabs
-    local tabs = {"Home", "Scripts", "Settings"}
-    local tabButtons = {}
-    for i, name in ipairs(tabs) do
-        local btn = Instance.new("TextButton")
-        btn.Size = UDim2.new(1, -10, 0, 35)
-        btn.Position = UDim2.new(0,5,0,(i-1)*40+5)
-        btn.BackgroundColor3 = Color3.fromRGB(50,50,55)
-        btn.Text = name
-        btn.TextColor3 = Color3.fromRGB(255,255,255)
-        btn.Font = Enum.Font.GothamBold
-        btn.TextSize = 14
-        btn.Parent = TabFrame
-        Instance.new("UICorner", btn)
-        tabButtons[name] = btn
-
-        btn.MouseButton1Click:Connect(function()
-            -- Clear previous content
-            for _, child in ipairs(ContentFrame:GetChildren()) do
-                if child:IsA("Frame") then
-                    child:Destroy()
-                end
-            end
-            -- Add new content
-            local page = Instance.new("Frame")
-            page.Size = UDim2.new(1,0,1,0)
-            page.BackgroundTransparency = 1
-            page.Parent = ContentFrame
-
-            local label = Instance.new("TextLabel")
-            label.Size = UDim2.new(1,0,1,0)
-            label.BackgroundTransparency = 1
-            label.TextColor3 = Color3.fromRGB(255,255,255)
-            label.Font = Enum.Font.Gotham
-            label.TextSize = 16
-            label.Text = "Welcome to "..name.." page!"
-            label.Parent = page
-        end)
-    end
-
-    -- ===============
-    -- Draggable Function
-    -- ===============
-    local function makeDraggable(frame)
-        local dragging = false
-        local dragStart, startPos
-
-        frame.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 or
-               input.UserInputType == Enum.UserInputType.Touch then
-                dragging = true
-                dragStart = input.Position
-                startPos = frame.Position
-
-                input.Changed:Connect(function()
-                    if input.UserInputState == Enum.UserInputState.End then
-                        dragging = false
-                    end
-                end)
-            end
-        end)
-
-        UIS.InputChanged:Connect(function(input)
-            if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-                local delta = input.Position - dragStart
-                frame.Position = UDim2.new(
-                    startPos.X.Scale,
-                    startPos.X.Offset + delta.X,
-                    startPos.Y.Scale,
-                    startPos.Y.Offset + delta.Y
-                )
-            end
-        end)
-    end
-
-    makeDraggable(Main)
-
-    -- ===============
-    -- Minimize / Close
-    -- ===============
-    local FloatingButton
-    local lastPos = UDim2.new(0.5,-20,0.5,-20)
+    -- Floating button
+    local Floating
 
     Minimize.MouseButton1Click:Connect(function()
         Main.Visible = false
-        if FloatingButton then return end
+        if Floating then return end
 
-        FloatingButton = Instance.new("TextButton")
-        FloatingButton.Size = UDim2.new(0,35,0,35)
-        FloatingButton.Position = lastPos
-        FloatingButton.BackgroundColor3 = Color3.fromRGB(70,170,255)
-        FloatingButton.Text = "K"
-        FloatingButton.TextColor3 = Color3.fromRGB(255,255,255)
-        FloatingButton.Font = Enum.Font.GothamBold
-        FloatingButton.TextSize = 16
-        FloatingButton.Parent = ScreenGui
-        Instance.new("UICorner", FloatingButton)
+        Floating = Instance.new("TextButton")
+        Floating.Size = UDim2.new(0,35,0,35)
+        Floating.Position = UDim2.new(0.5,-20,0.5,-20)
+        Floating.BackgroundColor3 = Color3.fromRGB(80,160,255)
+        Floating.Text = "K"
+        Floating.TextColor3 = Color3.new(1,1,1)
+        Floating.Parent = ScreenGui
+        Instance.new("UICorner", Floating)
 
-        makeDraggable(FloatingButton)
-
-        FloatingButton.MouseButton1Click:Connect(function()
+        Floating.MouseButton1Click:Connect(function()
             Main.Visible = true
-            lastPos = FloatingButton.Position
-            FloatingButton:Destroy()
-            FloatingButton = nil
+            Floating:Destroy()
+            Floating = nil
         end)
     end)
 
     Close.MouseButton1Click:Connect(function()
         ScreenGui:Destroy()
     end)
-
-    -- Load default tab
-    tabButtons["Home"]:Activate()
 end
-
--- ==================
--- Submit Button
--- ==================
-SubmitBtn.MouseButton1Click:Connect(function()
-    local key = TextBox.Text
-    if #key < 5 then
-        Feedback.Text = "Key too short!"
-        return
-    end
-
-    Feedback.Text = "Validating..."
-    local result = validateKey(key)
-    if result.valid then
-        getgenv().SCRIPT_KEY = key
-        KeyGui:Destroy()
-        loadKaLiHub()
-    else
-        Feedback.Text = "Invalid key!"
-    end
-end)
