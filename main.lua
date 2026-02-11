@@ -1,4 +1,4 @@
--- KaLiHub V2 Minimal GUI (Draggable + Floating Icon + Header Line)
+-- KaLiHub V2 Minimal GUI (Smaller, Draggable + Floating Icon + Header Line)
 
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
@@ -18,9 +18,9 @@ end)
 local parentGui = CoreGui or PlayerGui
 
 -- ===============================
--- Main GUI Frame
+-- Main GUI Frame (Smaller)
 -- ===============================
-local HEADER_HEIGHT = 40
+local HEADER_HEIGHT = 35
 
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "KaLiHubV2"
@@ -28,8 +28,8 @@ ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = parentGui
 
 local Main = Instance.new("Frame")
-Main.Size = UDim2.new(0,480,0,320)
-Main.Position = UDim2.new(0.5,-240,0.5,-160)
+Main.Size = UDim2.new(0,350,0,220) -- smaller width and height
+Main.Position = UDim2.new(0.5,-175,0.5,-110) -- center the smaller frame
 Main.BackgroundColor3 = Color3.fromRGB(20,20,25)
 Main.BorderSizePixel = 0
 Main.Parent = ScreenGui
@@ -47,35 +47,35 @@ Header.BackgroundTransparency = 1
 Header.Parent = Main
 
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1,-80,1,0)
+Title.Size = UDim2.new(1,-70,1,0)
 Title.Position = UDim2.new(0,10,0,0)
 Title.BackgroundTransparency = 1
 Title.Text = "KaLiHub V2"
 Title.TextColor3 = Color3.fromRGB(200,200,255)
 Title.Font = Enum.Font.GothamBold
-Title.TextSize = 16
+Title.TextSize = 14
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = Header
 
 local Close = Instance.new("TextButton")
-Close.Size = UDim2.new(0,35,0,30)
-Close.Position = UDim2.new(1,-40,0,5)
+Close.Size = UDim2.new(0,30,0,25)
+Close.Position = UDim2.new(1,-35,0,5)
 Close.BackgroundColor3 = Color3.fromRGB(200,60,60)
 Close.Text = "X"
 Close.TextColor3 = Color3.fromRGB(255,255,255)
 Close.Font = Enum.Font.GothamBold
-Close.TextSize = 16
+Close.TextSize = 14
 Close.Parent = Header
 Instance.new("UICorner", Close)
 
 local Minimize = Instance.new("TextButton")
-Minimize.Size = UDim2.new(0,35,0,30)
-Minimize.Position = UDim2.new(1,-80,0,5)
+Minimize.Size = UDim2.new(0,30,0,25)
+Minimize.Position = UDim2.new(1,-70,0,5)
 Minimize.BackgroundColor3 = Color3.fromRGB(70,170,255)
 Minimize.Text = "-"
 Minimize.TextColor3 = Color3.fromRGB(255,255,255)
 Minimize.Font = Enum.Font.GothamBold
-Minimize.TextSize = 16
+Minimize.TextSize = 14
 Minimize.Parent = Header
 Instance.new("UICorner", Minimize)
 
@@ -85,7 +85,7 @@ Instance.new("UICorner", Minimize)
 local HeaderLine = Instance.new("Frame")
 HeaderLine.Size = UDim2.new(1,0,0,1) -- 1px height
 HeaderLine.Position = UDim2.new(0,0,0,HEADER_HEIGHT-1)
-HeaderLine.BackgroundColor3 = Color3.fromRGB(80,160,255) -- matching stroke color
+HeaderLine.BackgroundColor3 = Color3.fromRGB(80,160,255)
 HeaderLine.BorderSizePixel = 0
 HeaderLine.Parent = Main
 
@@ -136,13 +136,13 @@ Minimize.MouseButton1Click:Connect(function()
 
     if not FloatingButton then
         FloatingButton = Instance.new("TextButton")
-        FloatingButton.Size = UDim2.new(0,40,0,40)
+        FloatingButton.Size = UDim2.new(0,35,0,35) -- smaller floating icon
         FloatingButton.Position = lastPos
         FloatingButton.BackgroundColor3 = Color3.fromRGB(70,170,255)
         FloatingButton.Text = "K"
         FloatingButton.TextColor3 = Color3.fromRGB(255,255,255)
         FloatingButton.Font = Enum.Font.GothamBold
-        FloatingButton.TextSize = 18
+        FloatingButton.TextSize = 16
         FloatingButton.Parent = ScreenGui
         Instance.new("UICorner", FloatingButton)
 
