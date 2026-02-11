@@ -1,4 +1,4 @@
--- KaLiHub V2 Minimal GUI (Smaller, Draggable + Floating Icon + Header + Tabs)
+-- KaLiHub V2 Minimal GUI (Smaller, Draggable + Floating Icon + Header Line)
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
@@ -122,51 +122,6 @@ local function makeDraggable(frame)
 end
 
 makeDraggable(Main)
-
--- ===============================
--- Tab Section (Left Area)
--- ===============================
-local TAB_WIDTH = 100
-
-local TabSection = Instance.new("Frame")
-TabSection.Size = UDim2.new(0, TAB_WIDTH, 1, -HEADER_HEIGHT)
-TabSection.Position = UDim2.new(0,0,0,HEADER_HEIGHT)
-TabSection.BackgroundColor3 = Color3.fromRGB(25,25,30)
-TabSection.BorderSizePixel = 0
-TabSection.Parent = Main
-Instance.new("UICorner", TabSection)
-
-local Divider = Instance.new("Frame")
-Divider.Size = UDim2.new(0,1,1,0)
-Divider.Position = UDim2.new(0, TAB_WIDTH, 0, HEADER_HEIGHT)
-Divider.BackgroundColor3 = Color3.fromRGB(80,160,255)
-Divider.BorderSizePixel = 0
-Divider.Parent = Main
-
-local TabButtons = Instance.new("Frame")
-TabButtons.Size = UDim2.new(1,0,1,0)
-TabButtons.BackgroundTransparency = 1
-TabButtons.BorderSizePixel = 0
-TabButtons.Parent = TabSection
-
-local function createTab(name, yOffset)
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, -10, 0, 35)
-    btn.Position = UDim2.new(0,5,0,yOffset)
-    btn.BackgroundColor3 = Color3.fromRGB(50,50,60)
-    btn.Text = name
-    btn.TextColor3 = Color3.fromRGB(255,255,255)
-    btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 14
-    btn.Parent = TabButtons
-    Instance.new("UICorner", btn)
-    return btn
-end
-
--- Example tabs
-createTab("Home", 10)
-createTab("Settings", 55)
-createTab("Scripts", 100)
 
 -- ===============================
 -- Minimize / Close
