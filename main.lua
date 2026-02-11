@@ -48,6 +48,8 @@ Title.Size = UDim2.new(1,-70,1,0)
 Title.Position = UDim2.new(0,10,0,0)
 Title.BackgroundTransparency = 1
 Title.Text = "KaLiHub V2"
+Title.Text = "KaLiHub V2"
+
 Title.TextColor3 = Color3.fromRGB(200,200,255)
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 14
